@@ -1,1 +1,73 @@
-# Maven build filestarget/pom.xml.tagpom.xml.releaseBackuppom.xml.versionsBackuppom.xml.nextrelease.propertiesdependency-reduced-pom.xmlbuildNumber.properties.mvn/timing.properties.mvn/wrapper/maven-wrapper.jar# IDE-specific files# IntelliJ IDEA.idea/*.iml*.iws*.iprout/# Eclipse.settings/.classpath.project.metadatabin/tmp/# VS Code.vscode/*!.vscode/settings.json!.vscode/tasks.json!.vscode/launch.json!.vscode/extensions.json*.code-workspace# Java specific*.class*.log*.jar*.war*.nar*.ear*.zip*.tar.gz*.rarhs_err_pid*replay_pid*# Operating System files# WindowsThumbs.dbehthumbs.dbDesktop.ini$RECYCLE.BIN/# macOS.DS_Store.AppleDouble.LSOverrideIcon._*.Spotlight-V100.Trashes# Application specific# Logslogs/# Maven Wrapper (if you decide to add it later)!.mvn/wrapper/maven-wrapper.jar!mvnw!mvnw.cmd
+# Maven build files
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE-specific files
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.settings/
+.classpath
+.project
+.metadata
+bin/
+tmp/
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Java specific
+*.class
+*.log
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+# Operating System files
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# Application specific
+# Logs
+logs/
+
+# Maven Wrapper (if you decide to add it later)
+!.mvn/wrapper/maven-wrapper.jar
+!mvnw
+!mvnw.cmd
