@@ -6,41 +6,23 @@ import com.rpms.ChatAndVideoConsultation.*;
 import java.util.ArrayList;
 
 /**
- * Manages automatic data persistence operations for the entire system.
- * Handles saving and loading all application data using serialization.
+ * Manages automatic data persistence operations
  */
 public class DataManager {
 
-    /** Directory where all serialized data files are stored */
     private static final String DATA_DIR = "data";
-    
-    /** File path for doctors serialization */
     private static final String DOCTORS_FILE = DATA_DIR + "/doctors.ser";
-    
-    /** File path for patients serialization */
     private static final String PATIENTS_FILE = DATA_DIR + "/patients.ser";
-    
-    /** File path for administrators serialization */
     private static final String ADMINS_FILE = DATA_DIR + "/admins.ser";
-    
-    /** File path for appointments serialization */
     private static final String APPOINTMENTS_FILE = DATA_DIR + "/appointments.ser";
-    
-    /** File path for video calls serialization */
     private static final String VIDEOCALLS_FILE = DATA_DIR + "/videocalls.ser";
-    
-    /** File path for chat histories serialization */
     private static final String CHAT_HISTORIES_FILE = DATA_DIR + "/chat_histories.ser";
-    
-    /** File path for system logs serialization */
     private static final String LOGS_FILE = DATA_DIR + "/logs.ser";
 
-    /** In-memory cache of chat histories */
     private static ArrayList<ChatHistory> chatHistories = new ArrayList<>();
 
     /**
-     * Initializes the data directory if it doesn't exist.
-     * Creates the data folder to store serialized objects.
+     * Initializes the data directory
      */
     private static void initDataDirectory() {
         File dataDir = new File(DATA_DIR);
@@ -51,8 +33,7 @@ public class DataManager {
     }
 
     /**
-     * Saves all system data to their respective serialized files.
-     * This method persists all application state data to disk.
+     * Saves all system data automatically
      */
     public static void saveAllData() {
         initDataDirectory();
@@ -83,8 +64,7 @@ public class DataManager {
     }
 
     /**
-     * Loads all system data from serialized files.
-     * This method restores the application state from disk.
+     * Loads all system data automatically
      */
     public static void loadAllData() {
         initDataDirectory();
@@ -150,9 +130,7 @@ public class DataManager {
     }
 
     /**
-     * Saves data for a specific doctor to their individual file.
-     * 
-     * @param doctor The doctor whose data should be saved
+     * Automatically saves a specific doctor's data
      */
     public static void saveDoctor(Doctor doctor) {
         initDataDirectory();
@@ -161,9 +139,7 @@ public class DataManager {
     }
 
     /**
-     * Saves data for a specific patient to their individual file.
-     * 
-     * @param patient The patient whose data should be saved
+     * Automatically saves a specific patient's data
      */
     public static void savePatient(Patient patient) {
         initDataDirectory();
@@ -172,12 +148,7 @@ public class DataManager {
     }
 
     /**
-     * Retrieves the chat history between two users.
-     * If no history exists, creates a new one.
-     * 
-     * @param user1Id First user's ID
-     * @param user2Id Second user's ID
-     * @return The ChatHistory object for these two users
+     * Gets the chat history between two users
      */
     public static ChatHistory getChatHistory(String user1Id, String user2Id) {
         for (ChatHistory history : chatHistories) {
@@ -196,10 +167,7 @@ public class DataManager {
     }
 
     /**
-     * Adds a new message to the appropriate chat history and saves it.
-     * Thread-safe method to handle concurrent message sending.
-     * 
-     * @param message The chat message to add
+     * Adds a new message to chat history
      */
     public static synchronized void addChatMessage(ChatMessage message) {
         ChatHistory history = getChatHistory(message.getSenderId(), message.getReceiverId());
@@ -214,10 +182,7 @@ public class DataManager {
     }
 
     /**
-     * Returns all chat histories involving a specific user.
-     * 
-     * @param userId The user ID to search for
-     * @return ArrayList of ChatHistory objects involving the user
+     * Returns all chat histories for a specific user
      */
     public static ArrayList<ChatHistory> getChatHistoriesForUser(String userId) {
         ArrayList<ChatHistory> userChatHistories = new ArrayList<>();

@@ -103,14 +103,7 @@ public class Patient extends User {
     public ArrayList<String> getEmergencyContacts() {
         return emergencyContacts;
     }
-    
-    /**
-     * Sets the list of emergency contacts for this patient
-     * @param emergencyContacts New list of emergency contacts
-     */
-    public void setEmergencyContacts(ArrayList<String> emergencyContacts) {
-        this.emergencyContacts = emergencyContacts;
-    }
+
     
     /**
      * Gets the primary physician assigned to this patient
@@ -120,13 +113,6 @@ public class Patient extends User {
         return physician;
     }
     
-    /**
-     * Sets the primary physician for this patient
-     * @param physician New primary physician
-     */
-    public void setPhysician(Doctor physician) {
-        this.physician = physician;
-    }
 
     // ===== Emergency Contact Methods =====
     
@@ -268,17 +254,7 @@ public class Patient extends User {
         DataManager.savePatient(this); // Auto-save
         DataManager.saveAllData(); // Auto-save all data
     }
-    
-    /**
-     * Removes a feedback from this patient's records
-     * @param feedback Feedback to remove
-     */
-    public void removeFeedback(Feedback feedback) {
-        feedbacks.remove(feedback);
-        System.out.println("Feedback removed for patient: " + getName());
-        DataManager.savePatient(this); // Auto-save
-        DataManager.saveAllData(); // Auto-save all data
-    }
+
     
     /**
      * Gets all previous feedback for this patient

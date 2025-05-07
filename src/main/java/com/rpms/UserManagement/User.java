@@ -53,12 +53,7 @@ public abstract class User implements Serializable {
     //------------------------------
     // Getters and Setters
     //------------------------------
-    
-    /**
-     * @return The user's password
-     */
-    public String getPassword() { return password; }
-    
+
     /**
      * @return The user's unique ID
      */

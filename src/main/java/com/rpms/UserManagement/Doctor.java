@@ -4,7 +4,6 @@ package com.rpms.UserManagement;
 import com.rpms.AppointmentScheduling.Appointment;
 import com.rpms.AppointmentScheduling.AppointmentManager;
 import com.rpms.ChatAndVideoConsultation.VideoCall;
-import com.rpms.DoctorPatientInteraction.Feedback;
 import com.rpms.EmergencyAlertSystem.EmergencyAlert;
 import com.rpms.HealthDataHandling.VitalSign;
 import com.rpms.utilities.DataManager;
@@ -69,49 +68,10 @@ public class Doctor extends User {
         DataManager.saveDoctor(this); // Auto-save
         DataManager.saveAllData(); // Auto-save all data
     }
-    
-    /**
-     * Displays all patients assigned to this doctor
-     */
-    public void viewPatients() {
-        System.out.println("Patients for Dr. " + getName() + ":");
-        for (Patient p : patients) {
-            System.out.println(p.getName());
-        }
-    }
 
-    // ===== Feedback Methods =====
-    
-    /**
-     * Provides medical feedback to a patient
-     * @param patient The patient to provide feedback to
-     * @param feedback The feedback to provide
-     */
-    public void provideFeedback(Patient patient, Feedback feedback) {
-        patient.addFeedback(feedback);
-    }
-    
-    /**
-     * Views all feedback given to a specific patient
-     * @param patient The patient whose feedback to view
-     */
-    public void viewPatientFeedbacks(Patient patient) {
-        System.out.println("Feedbacks for " + patient.getName() + ":");
-        for (Feedback f : patient.getFeedbacks()) {
-            System.out.println(f);
-        }
-    }
 
     // ===== Vital Signs Methods =====
-    
-    /**
-     * Views the vital signs of a specific patient
-     * @param patient The patient whose vital signs to view
-     */
-    public void viewPatientVitals(Patient patient) {
-        System.out.println("Vitals for " + patient.getName() + ":");
-        System.out.println(patient.getVitals());
-    }
+
     
     /**
      * Detects patients with critical vital signs
@@ -231,7 +191,6 @@ public class Doctor extends User {
         if (obj == null || getClass() != obj.getClass()) return false;
 
         Doctor other = (Doctor) obj;
-        boolean result = this.getId().equals(other.getId());
-        return result;
+        return this.getId().equals(other.getId());
     }
 }
