@@ -229,15 +229,22 @@ public class ChatManager {
     public static List<User> getChatContactsForUser(User user) {
         List<User> contacts = new ArrayList<>();
         
-        if (user instanceof Patient) {
-            // Patients can chat with their physician
-            Doctor physician = ((Patient) user).getPhysician();
+        if (user instanceof Patient patient) {
+            // 1. Add their physician
+            Doctor physician = patient.getPhysician();
             if (physician != null) {
                 contacts.add(physician);
             }
-        } else if (user instanceof Doctor) {
+            
+            // 2. Add all doctors who have this patient in their list
+            for (Doctor doctor : Administrator.getDoctors()) {
+                if (doctor.getPatients().contains(patient) && !contacts.contains(doctor)) {
+                    contacts.add(doctor);
+                }
+            }
+        } else if (user instanceof Doctor doctor) {
             // Doctors can chat with all their patients
-            contacts.addAll(((Doctor) user).getPatients());
+            contacts.addAll(doctor.getPatients());
         }
         
         return contacts;

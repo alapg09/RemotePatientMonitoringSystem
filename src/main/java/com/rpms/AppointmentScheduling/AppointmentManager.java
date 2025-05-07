@@ -1,7 +1,8 @@
 package com.rpms.AppointmentScheduling;
 
-import java.util.ArrayList;
 import com.rpms.ChatAndVideoConsultation.VideoCall;
+import com.rpms.UserManagement.*;
+import java.util.ArrayList;
 import com.rpms.utilities.*;
 
 // everything is static because the methods of appointment manager do not need an object
@@ -33,11 +34,41 @@ public class AppointmentManager {
     public static void approveAppointment(Appointment appointment) {
         appointment.setStatus("Approved");
         System.out.println("Appointment approved: " + appointment.getDateTime());
-        // checking if patient already exists
-        if(!appointment.getDoctor().getPatients().contains(appointment.getPatient())){
-            appointment.getDoctor().addPatient(appointment.getPatient());
+        
+        // Get the authoritative doctor from Administrator's list
+        Doctor authoritativeDoctor = null;
+        for (Doctor d : Administrator.getDoctors()) {
+            if (d.getId().equals(appointment.getDoctor().getId())) {
+                authoritativeDoctor = d;
+                break;
+            }
         }
+        
+        // Get the authoritative patient from Administrator's list
+        Patient authoritativePatient = null;
+        for (Patient p : Administrator.getPatients()) {
+            if (p.getId().equals(appointment.getPatient().getId())) {
+                authoritativePatient = p;
+                break;
+            }
+        }
+        
+        // Only proceed if we found both
+        if (authoritativeDoctor != null && authoritativePatient != null) {
+            // Add patient to the doctor's list if not already there
+            if (!authoritativeDoctor.getPatients().contains(authoritativePatient)) {
+                authoritativeDoctor.addPatient(authoritativePatient);
+                System.out.println("Patient " + authoritativePatient.getName() + 
+                                  " added to Dr. " + authoritativeDoctor.getName() + "'s list");
+            }
+            
+            // Update the appointment with these authoritative references
+            appointment.setDoctor(authoritativeDoctor);
+            appointment.setPatient(authoritativePatient);
+        }
+        
         DataManager.saveAllData(); // Auto-save
+        System.out.println("Appointment approved for: " + appointment.getPatient().getName());
     }
 
     // Modify cancelAppointment method

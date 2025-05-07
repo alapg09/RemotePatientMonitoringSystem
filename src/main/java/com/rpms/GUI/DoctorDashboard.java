@@ -267,14 +267,17 @@ public class DoctorDashboard {
         // === Add Tabs to TabPane ===
         tabPane.getTabs().addAll(patientTab, appointmentsTab, chatTab);
 
-        if(!remindersShown){
+        // Only show critical vitals alert if it hasn't been shown yet in this session
+        if (!remindersShown) {
             String msg = doctor.patientCriticalVitalDetection();
-            if(!msg.isEmpty()){
+            if (!msg.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.WARNING, msg);
                 alert.setTitle("Critical Vitals Detected");
                 alert.setHeaderText("Critical Vitals Detected!");
                 alert.showAndWait();
             }
+            // Mark that reminders have been shown for this session
+            remindersShown = true;
         }
 
         Scene scene = new Scene(tabPane, 900, 600);
@@ -302,11 +305,7 @@ public class DoctorDashboard {
             vitalsText.append("No vitals recorded for this patient.");
         } else {
             for (VitalSign v : vitals) {
-                vitalsText.append("• ").append(v.getDateTimeRecorded()).append(": ")
-                        .append("HR: ").append(v.getHeartRate()).append(" bpm, ")
-                        .append("Temp: ").append(v.getTemperature()).append("°C, ")
-                        .append("BP: ").append(v.getBloodPressure()).append(" mmHg, ")
-                        .append("O2: ").append(v.getOxygenLevel()).append("%\n");
+                vitalsText.append(v.toString()).append("\n");
             }
         }
 

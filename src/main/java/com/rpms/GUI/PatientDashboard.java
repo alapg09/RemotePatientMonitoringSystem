@@ -8,6 +8,7 @@ import com.rpms.HealthDataHandling.VitalSign;
 import com.rpms.NotificationsAndReminders.ReminderService;
 import com.rpms.Reports.ReportGenerator;
 import com.rpms.DoctorPatientInteraction.Feedback;
+import com.rpms.ChatAndVideoConsultation.ChatManager;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -262,32 +263,72 @@ public class PatientDashboard {
         VBox chatLayout = new VBox(10);
         chatLayout.setPadding(new Insets(10));
         
-        Label chatLabel = new Label("Chat with your doctor");
+        Label chatLabel = new Label("Chat with your doctors");
         chatLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
         chatLayout.getChildren().add(chatLabel);
         
-        // Get the patient's physician
-        Doctor physician = patient.getPhysician();
+        // Get all doctors this patient can chat with
+        List<User> availableDoctors = ChatManager.getChatContactsForUser(patient);
         
-        if (physician != null) {
-            HBox chatRow = new HBox(10);
-            chatRow.setAlignment(Pos.CENTER_LEFT);
-            chatRow.setPadding(new Insets(5));
-            chatRow.setStyle("-fx-border-color: #eee; -fx-border-radius: 5; -fx-background-color: #f9f9f9;");
+        if (!availableDoctors.isEmpty()) {
+            // Create a section for the primary physician
+            Doctor physician = patient.getPhysician();
+            if (physician != null) {
+                HBox primaryDocRow = new HBox(10);
+                primaryDocRow.setAlignment(Pos.CENTER_LEFT);
+                primaryDocRow.setPadding(new Insets(5));
+                primaryDocRow.setStyle("-fx-border-color: #2a9d8f; -fx-border-radius: 5; -fx-background-color: #e9f5f3;");
+                
+                Label primaryLabel = new Label("Primary Physician:");
+                primaryLabel.setStyle("-fx-font-weight: bold;");
+                
+                Label doctorLabel = new Label("Dr. " + physician.getName());
+                doctorLabel.setPrefWidth(200);
+                
+                Button openChatBtn = new Button("Open Chat");
+                openChatBtn.setOnAction(e -> {
+                    ChatWindow chatWindow = new ChatWindow(patient, physician);
+                    chatWindow.show();
+                });
+                
+                primaryDocRow.getChildren().addAll(primaryLabel, doctorLabel, openChatBtn);
+                chatLayout.getChildren().add(primaryDocRow);
+            }
             
-            Label doctorLabel = new Label("Dr. " + physician.getName());
-            doctorLabel.setPrefWidth(200);
-            
-            Button openChatBtn = new Button("Open Chat");
-            openChatBtn.setOnAction(e -> {
-                ChatWindow chatWindow = new ChatWindow(patient, physician);
-                chatWindow.show();
-            });
-            
-            chatRow.getChildren().addAll(doctorLabel, openChatBtn);
-            chatLayout.getChildren().add(chatRow);
+            // Add a separator and header for other doctors
+            if (availableDoctors.size() > 1) {
+                Separator separator = new Separator();
+                separator.setPadding(new Insets(5, 0, 5, 0));
+                
+                Label otherDoctorsLabel = new Label("Other Available Doctors:");
+                otherDoctorsLabel.setStyle("-fx-font-weight: bold;");
+                
+                chatLayout.getChildren().addAll(separator, otherDoctorsLabel);
+                
+                // List all other doctors
+                for (User user : availableDoctors) {
+                    if (user instanceof Doctor doctor && (physician == null || !doctor.equals(physician))) {
+                        HBox docRow = new HBox(10);
+                        docRow.setAlignment(Pos.CENTER_LEFT);
+                        docRow.setPadding(new Insets(5));
+                        docRow.setStyle("-fx-border-color: #eee; -fx-border-radius: 5; -fx-background-color: #f9f9f9;");
+                        
+                        Label docNameLabel = new Label("Dr. " + doctor.getName());
+                        docNameLabel.setPrefWidth(200);
+                        
+                        Button chatBtn = new Button("Open Chat");
+                        chatBtn.setOnAction(e -> {
+                            ChatWindow chatWindow = new ChatWindow(patient, doctor);
+                            chatWindow.show();
+                        });
+                        
+                        docRow.getChildren().addAll(docNameLabel, chatBtn);
+                        chatLayout.getChildren().add(docRow);
+                    }
+                }
+            }
         } else {
-            chatLayout.getChildren().add(new Label("You don't have an assigned physician."));
+            chatLayout.getChildren().add(new Label("You don't have any doctors available for chat."));
         }
         
         chatTab.setContent(new ScrollPane(chatLayout));

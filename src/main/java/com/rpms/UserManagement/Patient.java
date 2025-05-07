@@ -1,7 +1,6 @@
 package com.rpms.UserManagement;
 
-
-// required imports
+// Required imports
 import com.rpms.AppointmentScheduling.Appointment;
 import com.rpms.AppointmentScheduling.AppointmentManager;
 import com.rpms.ChatAndVideoConsultation.VideoCall;
@@ -11,34 +10,56 @@ import com.rpms.HealthDataHandling.VitalSign;
 import com.rpms.HealthDataHandling.VitalsDatabase;
 import com.rpms.utilities.DataManager;
 
-
 import java.util.ArrayList;
-// file i/o
+// File I/O
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-// date and time
+// Date and time
 import java.time.LocalDateTime;
 
+/**
+ * Patient class representing a patient in the healthcare system.
+ * Extends the User class with patient-specific functionality.
+ */
 public class Patient extends User {
-    // attributes specific to the Patient class
-    private final VitalsDatabase vitalsDatabase;  // to store the vital signs of the patient
-    private final ArrayList<Feedback> feedbacks;  // to store previous feedbacks given by doctors
-    private ArrayList<String> emergencyContacts; // to store emergency contact numbers of the patient
-    private Doctor physician;   // this is the general physician of the patient who tracks the vitals etc but the patient can havae multiple doctors for different specializations
+    /** Database to store the vital signs of the patient */
+    private final VitalsDatabase vitalsDatabase;
+    
+    /** List to store previous feedback given by doctors */
+    private final ArrayList<Feedback> feedbacks;
+    
+    /** List of emergency contact numbers for this patient */
+    private ArrayList<String> emergencyContacts;
+    
+    /** Primary physician assigned to this patient */
+    private Doctor physician;
 
+    /** Serialization version identifier */
     private static final long serialVersionUID = 1L;
 
-    // constructor to initialize the Patient object
-    public Patient(String id, String name, String phoneNumber, String email, String username, String password, ArrayList<String> emergencyContacts, Doctor physician) {
+    /**
+     * Constructor to initialize a new Patient with all required fields
+     * 
+     * @param id Unique identifier for the patient
+     * @param name Full name of the patient
+     * @param phoneNumber Contact phone number
+     * @param email Email address
+     * @param username Username for login
+     * @param password Password for authentication
+     * @param emergencyContacts List of emergency contacts
+     * @param physician Primary physician assigned to this patient
+     */
+    public Patient(String id, String name, String phoneNumber, String email, String username, String password, 
+                  ArrayList<String> emergencyContacts, Doctor physician) {
         super(id, name, phoneNumber, email, username, password);
-        // new vitals database object for each patient4
+        // New vitals database object for each patient
         this.vitalsDatabase = new VitalsDatabase();
-        // new arraylist for feedbacks for each patient
+        // New ArrayList for feedbacks for each patient
         this.feedbacks = new ArrayList<>();
-        // new arraylist for emergency contacts for each patient
+        // New ArrayList for emergency contacts for each patient
         this.emergencyContacts = emergencyContacts;
-        // setting the physician for the patient
+        // Setting the physician for the patient
         this.physician = physician;
         // Safe check before adding
         if (physician != null) {
@@ -46,37 +67,73 @@ public class Patient extends User {
         }
     }
 
+    /**
+     * Returns the role of this user
+     * @return "Patient" as the role
+     */
     @Override
     public String getRole() {
         return "Patient";
     }
 
-    // getter for VitalsDatabase of each patient
+    // ===== Getters and Setters =====
+    
+    /**
+     * Gets the vital signs database for this patient
+     * @return VitalsDatabase object
+     */
     public VitalsDatabase getVitals() {
         return vitalsDatabase;
     }
+    // No setter for vitalsDatabase as it's final
 
-    // getter for feedback
+    /**
+     * Gets the list of feedback given to this patient
+     * @return ArrayList of Feedback objects
+     */
     public ArrayList<Feedback> getFeedbacks() {
         return feedbacks;
     }
-    // getter for emergency contacts
+    // No setter for feedbacks as it's final
+    
+    /**
+     * Gets the list of emergency contacts for this patient
+     * @return ArrayList of emergency contact numbers
+     */
     public ArrayList<String> getEmergencyContacts() {
         return emergencyContacts;
     }
-    // setter for emergency contacts
+    
+    /**
+     * Sets the list of emergency contacts for this patient
+     * @param emergencyContacts New list of emergency contacts
+     */
     public void setEmergencyContacts(ArrayList<String> emergencyContacts) {
         this.emergencyContacts = emergencyContacts;
     }
-    // getter for physician
+    
+    /**
+     * Gets the primary physician assigned to this patient
+     * @return Doctor object representing the primary physician
+     */
     public Doctor getPhysician() {
         return physician;
     }
-    // setter for physician
+    
+    /**
+     * Sets the primary physician for this patient
+     * @param physician New primary physician
+     */
     public void setPhysician(Doctor physician) {
         this.physician = physician;
     }
-    //adding and removing emergency contacts
+
+    // ===== Emergency Contact Methods =====
+    
+    /**
+     * Adds a new emergency contact for this patient
+     * @param contact New emergency contact number
+     */
     public void addEmergencyContact(String contact) {
         if (!emergencyContacts.contains(contact)) {
             emergencyContacts.add(contact);
@@ -85,6 +142,11 @@ public class Patient extends User {
             System.out.println("This contact already exists for patient: " + getName());
         }
     }
+    
+    /**
+     * Removes an emergency contact for this patient
+     * @param contact Emergency contact number to remove
+     */
     public void removeEmergencyContact(String contact) {
         if (emergencyContacts.remove(contact)) {
             System.out.println("Emergency contact removed for patient: " + getName());
@@ -93,60 +155,135 @@ public class Patient extends User {
         }
     }
 
-    // no setters for VitalsDatabase and feedbacks because doesnt make sense to change vitasldatabase and feedbacks after the patient has been created
-
-
-
-
-
-    //
+    // ===== Emergency Alert Methods =====
+    
+    /**
+     * Activates the panic button to send emergency alerts
+     * @param message Message to include in the emergency alert
+     */
     public void panicButton(String message) {
-        PanicButton.pressPanicButton(message ,this);
+        PanicButton.pressPanicButton(message, this);
     }
 
-    // requesting a new appointment
-    public void requestAppointment(Appointment appointment) {
-        AppointmentManager.requestAppointment(appointment);
-        System.out.println("Appointment requested for: " + getName());
-    }
-
-
-    // Add auto-save to methods that modify patient data:
-
-    // Modify uploadVitalSign method
+    // ===== Vital Signs Methods =====
+    
+    /**
+     * Uploads a new vital sign for this patient
+     * @param vital VitalSign object to upload
+     * @return String containing any health alerts triggered
+     */
     public String uploadVitalSign(VitalSign vital) {
         vitalsDatabase.addVital(vital);
-        System.out.println("Vital sign added for patient: " + getName());
-        DataManager.savePatient(this); // Auto-save this patient
+        System.out.println("Vital signs uploaded for patient: " + getName());
+        
+        // Check for critical values
+        String alertMsg = EmergencyAlert.checkVitalSigns(this, vital);
+        
+        DataManager.savePatient(this); // Auto-save
         DataManager.saveAllData(); // Auto-save all data
+        
+        return alertMsg;
+    }
+    
+    /**
+     * Uploads multiple vital signs from a CSV file
+     * @param filePath Path to the CSV file
+     * @return ArrayList of alert messages for critical vitals
+     */
+    public ArrayList<String> uploadVitalsFromCSV(String filePath) {
+        ArrayList<String> alerts = new ArrayList<>();
 
-        return EmergencyAlert.checkVitalSigns(this, vital); // returns alert message or null
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+
+            // Skip header line if present
+            if ((line = br.readLine()) != null) {
+                // Skip header
+            }
+
+            // Process each line in the CSV file
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length < 5) {
+                    System.out.println("Invalid data format: " + line);
+                    continue;
+                }
+
+                try {
+                    double heartRate = Double.parseDouble(data[0].trim());
+                    double oxygenLevel = Double.parseDouble(data[1].trim());
+                    String bloodPressure = data[2].trim();
+                    double temperature = Double.parseDouble(data[3].trim());
+                    LocalDateTime dateTimeRecorded = LocalDateTime.parse(data[4].trim());
+
+                    VitalSign vital = new VitalSign(this.getId(), heartRate, oxygenLevel, bloodPressure, 
+                                                  temperature, dateTimeRecorded);
+                    String alert = uploadVitalSign(vital);
+                    if (!alert.isEmpty()) {
+                        alerts.add(alert);
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Error parsing numeric values: " + line);
+                } catch (Exception e) {
+                    System.out.println("Error processing line: " + line + " - " + e.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading CSV file: " + e.getMessage());
+        }
+
+        System.out.println("Vitals uploaded from CSV for patient: " + getName());
+        DataManager.savePatient(this); // Auto-save
+        DataManager.saveAllData(); // Auto-save all data
+        return alerts;
+    }
+    
+    /**
+     * Removes a vital sign from this patient's records
+     * @param vitalSign VitalSign to remove
+     */
+    public void removeVital(VitalSign vitalSign) {
+        vitalsDatabase.removeVital(vitalSign);
+        DataManager.savePatient(this); // Auto-save
+        DataManager.saveAllData(); // Auto-save all data
+    }
+    
+    /**
+     * Gets all previous vital signs for this patient
+     * @return ArrayList of VitalSign objects
+     */
+    public ArrayList<VitalSign> viewPreviousVitals() {
+        return vitalsDatabase.getVitals();
     }
 
-    // Modify addFeedback method
+    // ===== Feedback Methods =====
+    
+    /**
+     * Adds a new feedback to this patient's records
+     * @param feedback Feedback to add
+     */
     public void addFeedback(Feedback feedback) {
         feedbacks.add(feedback);
         System.out.println("Feedback added for patient: " + getName());
         DataManager.savePatient(this); // Auto-save
         DataManager.saveAllData(); // Auto-save all data
     }
-
-    // Modify removeFeedback method
+    
+    /**
+     * Removes a feedback from this patient's records
+     * @param feedback Feedback to remove
+     */
     public void removeFeedback(Feedback feedback) {
         feedbacks.remove(feedback);
         System.out.println("Feedback removed for patient: " + getName());
         DataManager.savePatient(this); // Auto-save
         DataManager.saveAllData(); // Auto-save all data
     }
-
-    // Modify removeVital method
-    public void removeVital(VitalSign vitalSign){
-        vitalsDatabase.removeVital(vitalSign);
-        DataManager.savePatient(this); // Auto-save
-        DataManager.saveAllData(); // Auto-save all data
-    }
-
-    // returns list of feedback comments
+    
+    /**
+     * Gets all previous feedback for this patient
+     * @return ArrayList of Feedback objects
+     */
     public ArrayList<Feedback> viewPreviousFeedbacks() {
         ArrayList<Feedback> feedback = new ArrayList<>();
         for (Feedback f : feedbacks) {
@@ -155,49 +292,21 @@ public class Patient extends User {
         return feedback;
     }
 
-    // returns list of vitals
-    public ArrayList<VitalSign> viewPreviousVitals() {
-        return vitalsDatabase.getVitals();
+    // ===== Appointment Methods =====
+    
+    /**
+     * Requests a new appointment for this patient
+     * @param appointment Appointment to request
+     */
+    public void requestAppointment(Appointment appointment) {
+        AppointmentManager.requestAppointment(appointment);
+        System.out.println("Appointment requested for: " + getName());
     }
-
-    public ArrayList<String> uploadVitalsFromCSV(String filePath) {
-        ArrayList<String> alerts = new ArrayList<>();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-
-            if ((line = br.readLine()) != null) {
-                // skip header
-            }
-
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                if (data.length != 5) {
-                    System.out.println("Invalid data format: " + line);
-                    continue;
-                }
-
-                double heartRate = Double.parseDouble(data[0].trim());
-                double oxygenLevel = Double.parseDouble(data[1].trim());
-                String bloodPressure = data[2].trim();
-                double temperature = Double.parseDouble(data[3].trim());
-                LocalDateTime dateTimeRecorded = LocalDateTime.parse(data[4].trim());
-
-                VitalSign vital = new VitalSign(this.getId(), heartRate, oxygenLevel, bloodPressure, temperature, dateTimeRecorded);
-                String alert = uploadVitalSign(vital); // this may return an alert
-                if (alert != null) {
-                    alerts.add(alert);
-                }
-            }
-            System.out.println("Vitals uploaded successfully from CSV.");
-        } catch (IOException | NumberFormatException e) {
-            System.out.println("Error reading CSV file: " + e.getMessage());
-        }
-
-        return alerts; // return list of critical alerts
-    }
-
-
+    
+    /**
+     * Gets all appointments for this patient
+     * @return ArrayList of Appointment objects
+     */
     public ArrayList<Appointment> viewAppointments() {
         ArrayList<Appointment> result = new ArrayList<>();
         for (Appointment appt : AppointmentManager.getAppointments()) {
@@ -207,7 +316,12 @@ public class Patient extends User {
         }
         return result;
     }
-
+    
+    /**
+     * Cancels an appointment for this patient
+     * @param appt Appointment to cancel
+     * @return true if successfully cancelled, false otherwise
+     */
     public boolean cancelAppointment(Appointment appt) {
         if (appt.getPatient().equals(this)) {
             return AppointmentManager.getAppointments().remove(appt);
@@ -215,11 +329,20 @@ public class Patient extends User {
         return false;
     }
 
+    // ===== Video Call Methods =====
+    
+    /**
+     * Requests a new video call for this patient
+     * @param videocall VideoCall to request
+     */
     public void requestVideoCall(VideoCall videocall) {
         AppointmentManager.requestVideoCall(videocall);
     }
-
-    // viewing video calls
+    
+    /**
+     * Gets all video calls for this patient
+     * @return ArrayList of VideoCall objects
+     */
     public ArrayList<VideoCall> viewVideoCalls() {
         ArrayList<VideoCall> result = new ArrayList<>();
         for (VideoCall videoCall : AppointmentManager.getVideoCalls()) {
@@ -229,8 +352,12 @@ public class Patient extends User {
         }
         return result;
     }
-
-    // cancelling the video call
+    
+    /**
+     * Cancels a video call for this patient
+     * @param videoCall VideoCall to cancel
+     * @return true if successfully cancelled, false otherwise
+     */
     public boolean cancelVideoCall(VideoCall videoCall) {
         if (videoCall.getPatient().equals(this)) {
             return AppointmentManager.getVideoCalls().remove(videoCall);
@@ -238,6 +365,13 @@ public class Patient extends User {
         return false;
     }
 
+    // ===== Object Overrides =====
+    
+    /**
+     * Checks if this patient equals another patient based on ID
+     * @param obj The object to compare with
+     * @return true if IDs match, false otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -246,10 +380,4 @@ public class Patient extends User {
         Patient other = (Patient) obj;
         return this.getId().equals(other.getId());
     }
-
-
-
-
-
-    // no toString bcs user's can be used. no need to didplay vitals and feedbacks in this
 }
