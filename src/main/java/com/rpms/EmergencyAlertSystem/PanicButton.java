@@ -2,14 +2,28 @@ package com.rpms.EmergencyAlertSystem;
 
 import com.rpms.UserManagement.Patient;
 
-// This class represents the Panic Button functionality in the emergency alert system.
-// patients have a method to press the panic button.
-
+/**
+ * Implements the panic button functionality for emergency situations.
+ * Allows patients to manually trigger emergency alerts with custom messages.
+ */
 public class PanicButton {
-    // static method to simulate pressing the panic button
-    // this method will be called when the patient presses the panic button
+    /**
+     * Simulates a patient pressing the panic button to trigger an emergency alert.
+     * Calls the notification service to send alerts to physician and emergency contacts.
+     * 
+     * @param message Custom emergency message from the patient
+     * @param patient The patient who activated the panic button
+     */
     public static void pressPanicButton(String message, Patient patient) {
-        // Trigger emergency alert
-        NotificationService.sendAlert(message, patient);
+        // Create the full emergency message
+        String fullMessage = "PANIC BUTTON PRESSED: " + message + 
+                            "\nPatient: " + patient.getName() + 
+                            " (ID: " + patient.getId() + ")";
+        
+        // Trigger emergency alert through the notification service
+        NotificationService.sendAlert(fullMessage, patient);
+        
+        // Log to console for system monitoring
+        System.out.println("Panic button pressed by " + patient.getName() + ": " + message);
     }
 }

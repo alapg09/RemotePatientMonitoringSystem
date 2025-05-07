@@ -5,32 +5,55 @@ import com.rpms.UserManagement.*;
 import java.util.ArrayList;
 import com.rpms.utilities.*;
 
-// everything is static because the methods of appointment manager do not need an object
+/**
+ * Central manager for all appointments and video calls in the system.
+ * Provides static methods to create, approve, and cancel appointments and video calls.
+ * Maintains the central repository of all scheduled appointments and consultations.
+ */
 public class AppointmentManager {
-    // static arraylist to hold all appointments
+    /** Central repository of all appointments in the system */
     private static ArrayList<Appointment> appointments = new ArrayList<>();
+    
+    /** Central repository of all video calls in the system */
     private static ArrayList<VideoCall> videoCalls = new ArrayList<>();
 
-    // getter for appointments
+    /**
+     * Gets all appointments in the system.
+     * 
+     * @return ArrayList of all appointments
+     */
     public static ArrayList<Appointment> getAppointments() {
         return appointments;
     }
-    // getter for video calls
+    
+    /**
+     * Gets all video calls in the system.
+     * 
+     * @return ArrayList of all video calls
+     */
     public static ArrayList<VideoCall> getVideoCalls() {
         return videoCalls;
     }
 
-
-    // Add at the end of existing methods:
-
-    // Modify requestAppointment method
+    /**
+     * Adds a new appointment request to the system.
+     * Sets initial status to "Pending" until approved by a doctor.
+     * 
+     * @param appointment The appointment to request
+     */
     public static void requestAppointment(Appointment appointment) {
         appointments.add(appointment);
         System.out.println("Appointment added to queue. Waiting to be approved.");
         DataManager.saveAllData(); // Auto-save
     }
 
-    // Modify approveAppointment method
+    /**
+     * Approves a pending appointment.
+     * Changes status to "Approved" and adds the patient to the doctor's patient list.
+     * Uses the authoritative doctor and patient objects from the Administrator's registry.
+     * 
+     * @param appointment The appointment to approve
+     */
     public static void approveAppointment(Appointment appointment) {
         appointment.setStatus("Approved");
         System.out.println("Appointment approved: " + appointment.getDateTime());
@@ -71,21 +94,36 @@ public class AppointmentManager {
         System.out.println("Appointment approved for: " + appointment.getPatient().getName());
     }
 
-    // Modify cancelAppointment method
+    /**
+     * Cancels an appointment.
+     * Changes status to "Cancelled" but keeps it in the system for record-keeping.
+     * 
+     * @param appointment The appointment to cancel
+     */
     public static void cancelAppointment(Appointment appointment) {
         appointment.setStatus("Cancelled");
         System.out.println("Appointment cancelled: " + appointment.getDateTime());
         DataManager.saveAllData(); // Auto-save
     }
 
-    // Modify requestVideoCall method
+    /**
+     * Adds a new video call request to the system.
+     * The call is set to "Pending" status until approved by a doctor.
+     * 
+     * @param videocall The video call to request
+     */
     public static void requestVideoCall(VideoCall videocall) {
         videoCalls.add(videocall);
         System.out.println("Video call requested for appointment: " + videocall.getStartTime() + " to " + videocall.getEndTime());
         DataManager.saveAllData(); // Auto-save
     }
 
-    // Modify cancelVideoCall method
+    /**
+     * Cancels a video call.
+     * Removes it from the active video calls list and sets status to "Cancelled".
+     * 
+     * @param videocall The video call to cancel
+     */
     public static void cancelVideoCall(VideoCall videocall) {
         videoCalls.remove(videocall);
         videocall.setStatus("Cancelled");
@@ -93,7 +131,13 @@ public class AppointmentManager {
         DataManager.saveAllData(); // Auto-save
     }
 
-    // Modify approveVideoCall method
+    /**
+     * Approves a video call request.
+     * Changes status to "Approved" and adds the patient to the doctor's patient list if needed.
+     * The doctor must provide a meeting link when approving.
+     * 
+     * @param videocall The video call to approve
+     */
     public static void approveVideoCall(VideoCall videocall) {
         videocall.setStatus("Approved");
         System.out.println("Video call approved: " + videocall.getStartTime());
@@ -104,5 +148,5 @@ public class AppointmentManager {
         DataManager.saveAllData(); // Auto-save
     }
 
-    // no toStirng method is needed here because the appointment manager is not an object that needs to be printed
+    // no toString method is needed here because the appointment manager is not an object that needs to be printed
 }

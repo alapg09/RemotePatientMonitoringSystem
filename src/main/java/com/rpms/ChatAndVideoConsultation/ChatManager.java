@@ -19,15 +19,35 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Central manager for the real-time chat system.
+ * Implements a TCP socket-based chat server that handles multiple concurrent client connections,
+ * message routing, and integration with the persistent data storage.
+ */
 public class ChatManager {
+    /** Base port to try first when starting server */
     private static final int BASE_PORT = 12345;
+    
+    /** Current port the server is running on */
     private static int currentPort = BASE_PORT;
+    
+    /** The server socket accepting client connections */
     private static ServerSocket serverSocket;
+    
+    /** Flag indicating if the server is currently running */
     private static boolean isRunning = false;
+    
+    /** Map of connected users: user ID → ClientHandler */
     private static final Map<String, ClientHandler> connectedUsers = new ConcurrentHashMap<>();
+    
+    /** Thread pool for handling multiple client connections concurrently */
     private static ExecutorService threadPool;
     
-    // Start the chat server
+    /**
+     * Starts the chat server on an available port.
+     * Tries multiple ports if the default port is already in use.
+     * Creates a thread pool for handling client connections.
+     */
     public static void startServer() {
         if (isRunning) return;
         
@@ -76,12 +96,20 @@ public class ChatManager {
         System.err.println("Failed to start chat server after trying multiple ports");
     }
     
-    // Get the current port (for clients to connect)
+    /**
+     * Returns the current port the server is running on.
+     * Used by clients to connect to the server.
+     * 
+     * @return The current server port
+     */
     public static int getCurrentPort() {
         return currentPort;
     }
     
-    // Stop the chat server
+    /**
+     * Stops the chat server and releases all resources.
+     * Closes all client connections and shuts down the thread pool.
+     */
     public static void stopServer() {
         isRunning = false;
         try {
@@ -104,18 +132,57 @@ public class ChatManager {
         }
     }
     
-    // Client handler for each connected client
+    /**
+     * Forces the release of the server port if it's in use.
+     * Attempts to connect and immediately close to trigger port release.
+     * This is useful when the server didn't shut down properly previously.
+     */
+    public static void forceReleasePort() {
+        try {
+            Socket socket = new Socket("localhost", currentPort);
+            socket.close();
+            System.out.println("Successfully connected to port " + currentPort + ", it appears to be in use.");
+        } catch (ConnectException e) {
+            // Port is not in use, which is good
+            System.out.println("Port " + currentPort + " is available.");
+        } catch (IOException e) {
+            System.out.println("Error checking port " + currentPort + ": " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Inner class that handles individual client connections.
+     * Each connected client gets its own ClientHandler instance.
+     */
     private static class ClientHandler implements Runnable {
+        /** The socket connection to this client */
         private Socket clientSocket;
+        
+        /** Stream for receiving objects from the client */
         private ObjectInputStream in;
+        
+        /** Stream for sending objects to the client */
         private ObjectOutputStream out;
+        
+        /** ID of the user this handler is serving */
         private String userId;
+        
+        /** Flag indicating if this handler is running */
         private boolean running = true;
         
+        /**
+         * Creates a new client handler for the specified socket.
+         * 
+         * @param socket Client's socket connection
+         */
         public ClientHandler(Socket socket) {
             this.clientSocket = socket;
         }
         
+        /**
+         * Closes the connection to the client.
+         * Called when the server is shutting down or the client disconnects.
+         */
         public void closeConnection() {
             running = false;
             try {
@@ -127,6 +194,10 @@ public class ChatManager {
             }
         }
         
+        /**
+         * Main processing loop for this client connection.
+         * Sets up streams, authenticates the user, and processes messages.
+         */
         @Override
         public void run() {
             try {
@@ -180,9 +251,15 @@ public class ChatManager {
             }
         }
         
+        /**
+         * Processes a chat message received from the client.
+         * Saves the message to persistent storage and routes it to the recipient if online.
+         * 
+         * @param message The chat message to process
+         */
         private void processMessage(ChatMessage message) {
             try {
-                // CRITICAL FIX: Save the message to persistent storage FIRST
+                // CRITICAL: Save the message to persistent storage FIRST
                 DataManager.addChatMessage(message);
                 System.out.println("Message saved: from " + message.getSenderId() + " to " + message.getReceiverId());
                 
@@ -203,6 +280,11 @@ public class ChatManager {
             }
         }
         
+        /**
+         * Sends a message to this client.
+         * 
+         * @param message The message to send
+         */
         public void sendMessage(ChatMessage message) {
             try {
                 out.writeObject(message);
@@ -215,7 +297,13 @@ public class ChatManager {
         }
     }
     
-    // Method to get user name by ID
+    /**
+     * Gets a user's name by their ID.
+     * Searches through all registered users in the system.
+     * 
+     * @param userId ID of the user to look up
+     * @return User's name, or "Unknown User" if not found
+     */
     public static String getUserNameById(String userId) {
         for (User user : Administrator.getAllUsers()) {
             if (user.getId().equals(userId)) {
@@ -225,7 +313,14 @@ public class ChatManager {
         return "Unknown User";
     }
     
-    // Method to get all chat contacts for a user
+    /**
+     * Gets all users that a specific user can chat with.
+     * For patients: their assigned doctor and any doctors who have them as patients.
+     * For doctors: all their assigned patients.
+     * 
+     * @param user The user to find chat contacts for
+     * @return List of users that can be contacted
+     */
     public static List<User> getChatContactsForUser(User user) {
         List<User> contacts = new ArrayList<>();
         
@@ -248,35 +343,5 @@ public class ChatManager {
         }
         
         return contacts;
-    }
-
-    /**
-     * Attempts to forcibly release the chat server port
-     */
-    public static void forceReleasePort() {
-        try {
-            // Try to connect to the port to check if it's in use
-            Socket socket = new Socket("localhost", BASE_PORT);
-            // If we got here, the port is in use
-            socket.close();
-            
-            // Use operating system commands to kill processes using the port
-            String os = System.getProperty("os.name").toLowerCase();
-            
-            if (os.contains("win")) {
-                // Windows
-                Runtime.getRuntime().exec("netstat -ano | findstr :" + BASE_PORT);
-                // Note: You would need to parse the output to get the PID and then kill it
-                // But this is complex and potentially dangerous
-            } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
-                // Linux/Unix/Mac
-                Runtime.getRuntime().exec("lsof -i :" + BASE_PORT + " | grep LISTEN");
-                // Similarly, would need to parse the output
-            }
-        } catch (ConnectException e) {
-            // Port is not in use, which is good
-        } catch (Exception e) {
-            System.err.println("Could not check port status: " + e.getMessage());
-        }
     }
 }
