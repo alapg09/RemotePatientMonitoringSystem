@@ -10,31 +10,62 @@ import javafx.stage.Stage;
 
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Manages a collection of vital signs for a patient.
+ * Provides functionality for storing, retrieving, and visualizing vital sign data.
+ * Implements Serializable to allow persistence of vital sign records.
+ */
 public class VitalsDatabase implements Serializable {
-    // Static list to hold all vital signs
+    /** Collection of all vital signs for a patient */
     private ArrayList<VitalSign> vitals = new ArrayList<>();
-
+    
+    /** Serialization version identifier */
     private static final long serialVersionUID = 1L;
 
+    /** Transient UI elements for visualization (not serialized) */
     private transient Scene scene;
     private transient Stage stage;
 
-    //getters and setters for scene and stage
+    // ===== Getters and Setters for UI Components =====
+    
+    /**
+     * Gets the JavaFX scene used for visualization
+     * @return Scene object
+     */
     public Scene getScene() {
         return scene;
     }
+    
+    /**
+     * Sets the JavaFX scene for visualization
+     * @param scene Scene to use for visualization
+     */
     public void setScene(Scene scene) {
         this.scene = scene;
     }
+    
+    /**
+     * Gets the JavaFX stage used for visualization
+     * @return Stage object
+     */
     public Stage getStage() {
         return stage;
     }
+    
+    /**
+     * Sets the JavaFX stage for visualization
+     * @param stage Stage to use for visualization
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
-    // getter for vitals
-
+    // ===== Vital Signs Collection Management =====
+    
+    /**
+     * Gets all vital signs in this database
+     * @return ArrayList of vital sign objects
+     */
     public ArrayList<VitalSign> getVitals() {
         if (vitals == null) {
             vitals = new ArrayList<>();
@@ -42,18 +73,30 @@ public class VitalsDatabase implements Serializable {
         return vitals;
     }
 
-
-    // adding a new vital
+    /**
+     * Adds a new vital sign to the database
+     * @param vital VitalSign to add
+     */
     public void addVital(VitalSign vital) {
         vitals.add(vital);
         System.out.println("Vital sign added to database.");
     }
-    // removing a vital sign
+    
+    /**
+     * Removes a vital sign from the database
+     * @param vital VitalSign to remove
+     */
     public void removeVital(VitalSign vital) {
         vitals.remove(vital);
         System.out.println("Vital sign removed from database.");
     }
 
+    /**
+     * Generates and displays a graphical visualization of vital signs over time.
+     * Creates a line chart showing trends in heart rate, oxygen levels, and temperature.
+     * 
+     * @param stage JavaFX stage to display the visualization
+     */
     public void generateVitalsGraph(Stage stage) {
         if (vitals.isEmpty()) {
             System.out.println("No vitals to display.");
@@ -103,26 +146,30 @@ public class VitalsDatabase implements Serializable {
         stage.setScene(scene);
         stage.show();
     }
-
-
-    // if all the vital signs are to be displayed for a specific user ID
+    
+    /**
+     * Displays all vital signs in the console
+     * Used for debugging and text-based interfaces
+     */
     public void displayVitals() {
         System.out.println("Vital Signs: ");
         for (VitalSign v : vitals) {
             System.out.println(v);
         }
     }
-    // Add these methods to ensure proper serialization
-
-    // This gets called after deserializing the object
+    
+    /**
+     * Custom deserialization method to handle transient fields
+     * Initializes UI components after deserialization
+     * 
+     * @param in ObjectInputStream to read from
+     * @throws IOException If an I/O error occurs
+     * @throws ClassNotFoundException If class of a serialized object cannot be found
+     */
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         // Initialize transient fields
         this.scene = null;
         this.stage = null;
     }
-
-
-
-
 }

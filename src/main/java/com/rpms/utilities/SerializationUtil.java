@@ -3,22 +3,33 @@ package com.rpms.utilities;
 import java.io.*;
 
 /**
- * Utility class for object serialization and deserialization
+ * Utility class for object serialization and deserialization.
+ * Provides static methods to save and load objects to/from files.
  */
 public class SerializationUtil {
 
     /**
-     * Serializes an object to a file
+     * Serializes an object to a file.
+     * 
      * @param obj The object to serialize
      * @param filePath The file path to save to
      * @return True if successful, false otherwise
      */
     public static boolean serializeObject(Object obj, String filePath) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(
-                new FileOutputStream(filePath))) {
-            oos.writeObject(obj);
-            System.out.println("Object serialized to: " + filePath);
-            return true;
+        try {
+            // Ensure parent directory exists
+            File file = new File(filePath);
+            File parent = file.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+            
+            try (ObjectOutputStream oos = new ObjectOutputStream(
+                    new FileOutputStream(filePath))) {
+                oos.writeObject(obj);
+                System.out.println("Object serialized to: " + filePath);
+                return true;
+            }
         } catch (IOException e) {
             System.err.println("Error serializing object: " + e.getMessage());
             e.printStackTrace();
@@ -27,7 +38,8 @@ public class SerializationUtil {
     }
 
     /**
-     * Deserializes an object from a file
+     * Deserializes an object from a file.
+     * 
      * @param filePath The file path to read from
      * @return The deserialized object or null if unsuccessful
      */

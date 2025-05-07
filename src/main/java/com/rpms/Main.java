@@ -1,12 +1,28 @@
 package com.rpms;
 
-
 import com.rpms.ChatAndVideoConsultation.ChatManager;
 import com.rpms.GUI.LoginScreen;
 import javafx.application.Application;
 import javafx.application.Platform;
 
-public class    Main {
+
+/**
+ * NOTE: 
+ * All the javadocs are added using the help of Github Copilot.
+ * /
+
+
+/**
+ * Main entry point for the Remote Patient Monitoring System (RPMS) application.
+ * This class initializes the chat server and launches the JavaFX application.
+ */
+public class Main {
+    /**
+     * Main method that starts the RPMS application.
+     * Initializes the chat server and launches the login screen.
+     * 
+     * @param args Command line arguments (not used)
+     */
     public static void main(String[] args) {
         // Add shutdown hook OUTSIDE the try block to ensure it's registered early
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

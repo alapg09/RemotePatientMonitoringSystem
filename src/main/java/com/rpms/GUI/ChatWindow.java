@@ -18,24 +18,57 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 
+/**
+ * Provides a chat interface for communication between doctors and patients.
+ * Handles connection to the chat server, message sending/receiving, and chat history.
+ */
 public class ChatWindow {
+    /** The current user (patient or doctor) using this chat window */
     private User currentUser;
+    
+    /** The user the current user is chatting with */
     private User chatPartner;
+    
+    /** The window stage for this chat */
     private Stage stage;
+    
+    /** Text area to display the chat history and messages */
     private TextArea chatArea;
+    
+    /** Socket connection to the chat server */
     private Socket socket;
+    
+    /** Output stream to send messages to the server */
     private ObjectOutputStream out;
+    
+    /** Input stream to receive messages from the server */
     private ObjectInputStream in;
+    
+    /** Flag indicating if connected to the chat server */
     private boolean isConnected = false;
+    
+    /** Thread for receiving messages asynchronously */
     private Thread receiveThread;
+    
+    /** Text field for entering messages */
     private TextField messageField;
 
+    /**
+     * Creates a new chat window between two users.
+     * 
+     * @param currentUser The user who initiated the chat
+     * @param chatPartner The user to chat with
+     */
     public ChatWindow(User currentUser, User chatPartner) {
         this.currentUser = currentUser;
         this.chatPartner = chatPartner;
         this.stage = new Stage();
     }
 
+    /**
+     * Initializes and displays the chat window interface.
+     * Sets up UI components, loads chat history, and connects to the chat server.
+     */
     public void show() {
         stage.setTitle("Chat with " + chatPartner.getName());
 
@@ -88,6 +121,10 @@ public class ChatWindow {
         stage.setOnCloseRequest(e -> disconnect());
     }
 
+    /**
+     * Loads and displays the previous chat history between these users.
+     * Retrieves messages from the DataManager and adds them to the chat area.
+     */
     private void loadChatHistory() {
         // Clear the chat area first
         chatArea.clear();
@@ -110,6 +147,12 @@ public class ChatWindow {
                           currentUser.getId() + " and " + chatPartner.getId());
     }
 
+    /**
+     * Connects to the chat server in a separate thread.
+     * Updates the status label to show connection state.
+     * 
+     * @param statusLabel Label to update with connection status
+     */
     private void connectToServer(Label statusLabel) {
         new Thread(() -> {
             try {
@@ -150,6 +193,10 @@ public class ChatWindow {
         }).start();
     }
 
+    /**
+     * Starts a separate thread to receive incoming messages.
+     * Continuously listens for messages from the chat partner.
+     */
     private void receiveMessages() {
         receiveThread = new Thread(() -> {
             try {
@@ -183,11 +230,16 @@ public class ChatWindow {
                 disconnect();
             }
         });
-        
         receiveThread.setDaemon(true);
         receiveThread.start();
     }
 
+    /**
+     * Sends a message to the chat partner.
+     * Creates a ChatMessage object and sends it to the server.
+     * 
+     * @param content The text content of the message to send
+     */
     private void sendMessage(String content) {
         if (content == null || content.trim().isEmpty()) return;
         
@@ -230,27 +282,42 @@ public class ChatWindow {
         }
     }
 
+    /**
+     * Adds a message to the chat area with appropriate formatting.
+     * Different formatting is applied for sent vs. received messages.
+     * 
+     * @param message The ChatMessage to display
+     */
     private void appendMessage(ChatMessage message) {
-        boolean isSentByMe = message.getSenderId().equals(currentUser.getId());
-        String displayName = isSentByMe ? "You" : message.getSenderName();
-        String formattedMessage = String.format("[%s] %s: %s\n", 
-            message.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")),
-            displayName, 
-            message.getContent());
-        
+        String formattedMessage;
+        if (message.getSenderId().equals(currentUser.getId())) {
+            // This is a message sent by the current user
+            formattedMessage = "You: " + message.getContent() + "\n";
+        } else {
+            // This is a message received from the chat partner
+            formattedMessage = chatPartner.getName() + ": " + message.getContent() + "\n";
+        }
         chatArea.appendText(formattedMessage);
     }
 
+    /**
+     * Disconnects from the chat server and cleans up resources.
+     * Called when the chat window is closed or connection is lost.
+     */
     private void disconnect() {
         if (!isConnected) return;
         
         isConnected = false;
         
         try {
-            if (receiveThread != null) receiveThread.interrupt();
-            if (socket != null && !socket.isClosed()) socket.close();
-            if (in != null) in.close();
+            if (receiveThread != null) {
+                receiveThread.interrupt();
+            }
+            
             if (out != null) out.close();
+            if (in != null) in.close();
+            if (socket != null && !socket.isClosed()) socket.close();
+            
         } catch (IOException e) {
             System.err.println("Error disconnecting: " + e.getMessage());
         }

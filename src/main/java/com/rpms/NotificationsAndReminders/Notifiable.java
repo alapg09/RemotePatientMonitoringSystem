@@ -1,7 +1,13 @@
 package com.rpms.NotificationsAndReminders;
 
-public interface Notifiable  {
-    // only one method to be implemented
-    // this method will be used to send notifications to the user
+/**
+ * Interface defining the behavior for all notification types in the system.
+ * Any class that can send notifications must implement this interface.
+ */
+public interface Notifiable {
+    /**
+     * Method to send a notification.
+     * Implementing classes will define specific notification channels (SMS, email, etc.).
+     */
     void sendNotification();
 }

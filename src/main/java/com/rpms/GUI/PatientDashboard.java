@@ -23,17 +23,34 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Dashboard interface for patient users.
+ * Provides functionality to manage vital signs, appointments, emergency contacts,
+ * view medical feedback, and communicate with doctors.
+ */
 public class PatientDashboard {
 
+    /** The patient user who is currently logged in */
     private Patient patient;
 
+    /** Flag to track if reminders have been shown during this session */
     private boolean remindersShown = false; // for keeping track of alerts
 
-
+    /**
+     * Creates a new patient dashboard for the specified patient.
+     * 
+     * @param patient The patient user who logged in
+     */
     public PatientDashboard(Patient patient) {
         this.patient = patient;
     }
 
+    /**
+     * Initializes and displays the patient dashboard interface.
+     * Sets up all tabs, components, and event handlers.
+     * 
+     * @param stage The JavaFX stage to display the dashboard
+     */
     public void start(Stage stage) {
         stage.setTitle("Patient Dashboard - " + patient.getName());
 
@@ -178,12 +195,12 @@ public class PatientDashboard {
 
         appointmentLayout.getChildren().addAll(requestAppt, requestVideoCall);
 
-// Divider label
+        // Divider label
         Label videoCallLabel = new Label("Scheduled Video Calls");
         videoCallLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-underline: true;");
         appointmentLayout.getChildren().add(videoCallLabel);
 
-// List video calls
+        // List video calls
         for (VideoCall vc : patient.viewVideoCalls()) {
             HBox vcRow = new HBox(10);
             vcRow.setAlignment(Pos.CENTER_LEFT);
@@ -360,6 +377,12 @@ public class PatientDashboard {
         stage.show();
     }
 
+    /**
+     * Displays an alert dialog with the specified title and message.
+     * 
+     * @param title The title of the alert dialog
+     * @param message The message to display in the alert
+     */
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);

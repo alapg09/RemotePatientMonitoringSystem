@@ -11,8 +11,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.io.File;
 
+/**
+ * Generates comprehensive reports of patient data.
+ * This class provides static methods to create patient health reports in plain text format.
+ */
 public class ReportGenerator {
 
+    /**
+     * Generates a detailed report of a patient's health data and saves it to a file.
+     * The report includes:
+     * - Patient information
+     * - Doctor information
+     * - Vital signs history
+     * - Medical feedback
+     * - Prescriptions
+     * 
+     * @param patient The patient whose report should be generated
+     * @param file The file where the report will be saved
+     */
     public static void generatePatientReport(Patient patient, File file) {
         try (FileWriter writer = new FileWriter(file)) {
 
@@ -53,5 +69,4 @@ public class ReportGenerator {
             System.err.println("Failed to generate report: " + e.getMessage());
         }
     }
-
 }

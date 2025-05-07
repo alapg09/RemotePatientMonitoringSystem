@@ -10,7 +10,6 @@ import com.rpms.UserManagement.Doctor;
 import com.rpms.UserManagement.Patient;
 import com.rpms.UserManagement.Administrator;
 
-
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,24 +19,39 @@ import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-
-
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
+/**
+ * Dashboard interface for doctor users.
+ * Provides functionality to manage patients, view and approve appointments,
+ * give medical feedback, and engage in video consultations.
+ */
 public class DoctorDashboard {
 
+    /** The doctor user who is currently logged in */
     private Doctor doctor;
 
+    /** Flag to track if reminders have been shown during this session */
     private boolean remindersShown = false; // for keeping track of alerts
 
-
+    /**
+     * Creates a new doctor dashboard for the specified doctor.
+     * 
+     * @param doctor The doctor user who logged in
+     */
     public DoctorDashboard(Doctor doctor) {
         this.doctor = doctor;
     }
 
+    /**
+     * Initializes and displays the doctor dashboard interface.
+     * Sets up all tabs, components, and event handlers.
+     * 
+     * @param stage The JavaFX stage to display the dashboard
+     */
     public void start(Stage stage) {
         // Refresh patient data from Administrator's list to ensure fresh data
         ArrayList<Patient> refreshedPatients = new ArrayList<>();
@@ -290,6 +304,11 @@ public class DoctorDashboard {
         stage.show();
     }
 
+    /**
+     * Displays a popup window showing all vital signs for a patient.
+     * 
+     * @param patient The patient whose vital signs to display
+     */
     private void showVitalsPopup(Patient patient) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Vitals - " + patient.getName());
@@ -315,6 +334,11 @@ public class DoctorDashboard {
         alert.showAndWait();
     }
 
+    /**
+     * Displays a dialog for entering feedback and prescriptions for a patient.
+     * 
+     * @param patient The patient to provide feedback to
+     */
     private void showFeedbackDialog(Patient patient) {
         Dialog<Feedback> dialog = new Dialog<>();
         dialog.setTitle("Give Feedback");
@@ -382,6 +406,5 @@ public class DoctorDashboard {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Feedback added.");
             alert.show();
         }
-
     }
 }
