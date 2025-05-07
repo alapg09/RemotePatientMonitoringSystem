@@ -7,6 +7,7 @@ import com.rpms.UserManagement.*;
 import com.rpms.HealthDataHandling.VitalSign;
 import com.rpms.NotificationsAndReminders.ReminderService;
 import com.rpms.Reports.ReportGenerator;
+import com.rpms.DoctorPatientInteraction.Feedback;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -38,7 +39,7 @@ public class PatientDashboard {
         BorderPane root = new BorderPane();
 
         // Panic button on top right
-        Button panicBtn = new Button("🚨 Panic");
+        Button panicBtn = new Button("Panic");
         panicBtn.setOnAction(e -> {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setHeaderText("Enter emergency message");
@@ -236,8 +237,8 @@ public class PatientDashboard {
         VBox fbLayout = new VBox(10);
         fbLayout.setPadding(new Insets(10));
 
-        for (String fb : patient.viewPreviousFeedbacks()) {
-            fbLayout.getChildren().add(new Label(fb));
+        for (Feedback fb : patient.viewPreviousFeedbacks()) {
+            fbLayout.getChildren().add(new Label(fb.toString()));
         }
 
         Button downloadReport = new Button("Download Report");
@@ -299,9 +300,11 @@ public class PatientDashboard {
             ReminderService reminderService = new ReminderService(patient);
             String appointments = reminderService.getAppointmentReminders();
             String medications = reminderService.getMedicationReminders();
+            String videoCalls = reminderService.getApprovedVideoCalls();
             StringBuilder reminderMsg = new StringBuilder();
             if (!appointments.isEmpty()) reminderMsg.append("Upcoming Appointments:\n").append(appointments);
             if (!medications.isEmpty()) reminderMsg.append("Medications:\n").append(medications);
+            if (!videoCalls.isEmpty()) reminderMsg.append("Upcoming Video Calls:\n").append(videoCalls);
             if (reminderMsg.length() > 0) showAlert("Reminders", reminderMsg.toString());
             remindersShown = true;
         }

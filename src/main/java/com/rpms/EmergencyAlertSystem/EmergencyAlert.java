@@ -7,7 +7,7 @@ public class EmergencyAlert {
     // static method so that it can be called without creating an object of the class
     public static String checkVitalSigns(Patient patient, VitalSign vital) {
         if (isVitalSignAbnormal(vital)) {
-            String alertMsg = "⚠️ Emergency Alert: Abnormal vital signs detected for Patient "
+            String alertMsg = "Emergency Alert: Abnormal vital signs detected for Patient "
                     + patient.getName() + " (ID: " + patient.getId() + ")";
             NotificationService.sendAlert(alertMsg, patient);
             return alertMsg;

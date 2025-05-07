@@ -61,8 +61,8 @@ public class VitalSign implements Serializable {
             int systolic = Integer.parseInt(bpParts[0]);
             int diastolic = Integer.parseInt(bpParts[1]);
 
-            if (systolic < 90 || systolic > 140 || diastolic < 60 || diastolic > 90) {
-                throw new IllegalArgumentException("Invalid blood pressure. Systolic must be between 90 and 140, and diastolic must be between 60 and 90.");
+            if (systolic < 60 || systolic > 250 || diastolic < 30 || diastolic > 150) {
+                throw new IllegalArgumentException("Invalid blood pressure. Systolic must be between 60 and 250, and diastolic must be between 30 and 150.");
             }
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid blood pressure values. Please provide numeric values.");
@@ -93,6 +93,6 @@ public class VitalSign implements Serializable {
         return "HR: " + heartRate +
                 "\nO2: " + oxygenLevel +
                 "%\nTemp: " + temperature + "°C" +
-                "\nDate & Time: " + DateUtil.format(dateTimeRecorded);
+                "\nDate & Time: " + DateUtil.format(dateTimeRecorded) + "/n/n";
     }
 }

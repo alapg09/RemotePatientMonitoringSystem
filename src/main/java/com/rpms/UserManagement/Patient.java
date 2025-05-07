@@ -147,12 +147,12 @@ public class Patient extends User {
     }
 
     // returns list of feedback comments
-    public ArrayList<String> viewPreviousFeedbacks() {
-        ArrayList<String> feedbackComments = new ArrayList<>();
+    public ArrayList<Feedback> viewPreviousFeedbacks() {
+        ArrayList<Feedback> feedback = new ArrayList<>();
         for (Feedback f : feedbacks) {
-            feedbackComments.add(f.getComments());
+            feedback.add(f);
         }
-        return feedbackComments;
+        return feedback;
     }
 
     // returns list of vitals

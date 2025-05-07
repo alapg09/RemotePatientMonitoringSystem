@@ -103,7 +103,7 @@ public class DoctorDashboard {
         }
 
         if (doctor.getPatients().isEmpty()) {
-            patientContainer.getChildren().add(new Label("🚫 No patients assigned."));
+            patientContainer.getChildren().add(new Label("No patients assigned."));
         }
 
         ScrollPane patientScroll = new ScrollPane(patientContainer);
@@ -169,10 +169,10 @@ public class DoctorDashboard {
 
         // Video Call Section
         VBox videoCallBox = new VBox(10);
-        videoCallBox.getChildren().add(new Label("📹 Video Calls:"));
+        videoCallBox.getChildren().add(new Label("Video Calls:"));
 
         if (doctor.getVideoCalls().isEmpty()) {
-            videoCallBox.getChildren().add(new Label("🚫 No video calls available."));
+            videoCallBox.getChildren().add(new Label("No video calls available."));
         } else {
             for (VideoCall call : doctor.getVideoCalls()) {
                 VBox callInfo = new VBox(5);
@@ -232,7 +232,7 @@ public class DoctorDashboard {
         VBox chatContainer = new VBox(10);
         chatContainer.setPadding(new Insets(10));
         
-        Label chatHeaderLabel = new Label("💬 Chat with your patients");
+        Label chatHeaderLabel = new Label("Chat with your patients");
         chatHeaderLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         chatContainer.getChildren().add(chatHeaderLabel);
         
@@ -324,7 +324,7 @@ public class DoctorDashboard {
         TextArea commentArea = new TextArea();
 
         VBox prescriptionBox = new VBox(5);
-        Button addPrescriptionBtn = new Button("➕ Add Prescription");
+        Button addPrescriptionBtn = new Button("Add Prescription");
 
         ArrayList<Prescription> prescriptions = new ArrayList<>();
 
@@ -361,7 +361,7 @@ public class DoctorDashboard {
             Prescription prescription = presDialog.showAndWait().orElse(null);
             if (prescription != null) {
                 prescriptions.add(prescription);
-                prescriptionBox.getChildren().add(new Label("✔ " + prescription.toString()));
+                prescriptionBox.getChildren().add(new Label(prescription.toString()));
             }
         });
 
@@ -380,7 +380,7 @@ public class DoctorDashboard {
         Feedback feedback = dialog.showAndWait().orElse(null);
         if (feedback != null) {
             patient.addFeedback(feedback);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "✅ Feedback added.");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Feedback added.");
             alert.show();
         }
 

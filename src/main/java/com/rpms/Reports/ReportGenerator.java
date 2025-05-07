@@ -31,15 +31,13 @@ public class ReportGenerator {
             writer.write("Vitals History:\n");
             ArrayList<VitalSign> vitals = patient.getVitals().getVitals();
             for (VitalSign v : vitals) {
-                writer.write(" - [" + v.getDateTimeRecorded() + "] HR: " + v.getHeartRate() +
-                        " bpm, Temp: " + v.getTemperature() + "°C, BP: " + v.getBloodPressure() +
-                        " mmHg, O2: " + v.getOxygenLevel() + "%\n");
+                writer.write(v.toString() + "\n");
             }
 
             writer.write("\nFeedback:\n");
             ArrayList<Feedback> feedbacks = patient.getFeedbacks();
             for (Feedback f : feedbacks) {
-                writer.write(" - [" + f.getDate() + "] " + f.getComments() + "\n");
+                writer.write(f.toString());
                 ArrayList<Prescription> prescriptions = f.getPrescriptions();
                 if (prescriptions != null && !prescriptions.isEmpty()) {
                     writer.write("   Prescriptions:\n");
@@ -49,10 +47,10 @@ public class ReportGenerator {
                 }
             }
 
-            System.out.println("✅ Report generated: " + file.getAbsolutePath());
+            System.out.println("Report generated: " + file.getAbsolutePath());
 
         } catch (IOException e) {
-            System.err.println("❌ Failed to generate report: " + e.getMessage());
+            System.err.println("Failed to generate report: " + e.getMessage());
         }
     }
 
