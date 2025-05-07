@@ -8,7 +8,7 @@ import javafx.application.Platform;
 
 /**
  * NOTE: 
- * All the javadocs are added using the help of Github Copilot.
+ * All the javadocs are added with the help of Github Copilot.
  * /
 
 
