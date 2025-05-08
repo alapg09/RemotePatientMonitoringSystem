@@ -366,13 +366,21 @@ public class PatientDashboard {
             if (reminderMsg.length() > 0) showAlert("Reminders", reminderMsg.toString());
             remindersShown = true;
         }
+        Scene scene = new Scene(root, 900, 600);
 
-        stage.setScene(new Scene(root, 900, 600));
+        stage.setScene(scene);
 
         stage.setOnCloseRequest(event -> {
             Platform.exit();
             System.exit(0);  // Force JVM shutdown
         });
+
+        // Replace the line causing the error (around line 304)
+        String cssPath = com.rpms.Main.getStylesheetPath();
+        if (cssPath != null) {
+            scene.getStylesheets().add(cssPath);
+        }
+
 
         stage.show();
     }

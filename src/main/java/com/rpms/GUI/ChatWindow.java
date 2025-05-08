@@ -109,6 +109,12 @@ public class ChatWindow {
         // Show window
         Scene scene = new Scene(root, 400, 500);
         stage.setScene(scene);
+        // Replace the line causing the error (around line 304)
+        String cssPath = com.rpms.Main.getStylesheetPath();
+        if (cssPath != null) {
+            scene.getStylesheets().add(cssPath);
+        }
+
         stage.show();
 
         // Load chat history - IMPORTANT: Do this first

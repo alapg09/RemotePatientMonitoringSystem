@@ -3,6 +3,7 @@ package com.rpms.GUI;
 import com.rpms.utilities.DataManager;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -24,30 +25,65 @@ public class LoginScreen extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
+        
         primaryStage.setTitle("Remote Health Monitoring System - Login");
 
         // Creating GUI elements
         Label roleLabel = new Label("Select role:");
         ComboBox<String> roleComboBox = new ComboBox<>();
         roleComboBox.getItems().addAll("Patient", "Doctor", "Administrator");
+        roleComboBox.setPromptText("Choose your role");
+        roleComboBox.setMaxWidth(Double.MAX_VALUE);
 
         Label usernameLabel = new Label("Username:");
         TextField usernameTextField = new TextField();
+        usernameTextField.setPromptText("Enter your username");
+
 
         Label passwordLabel = new Label("Password:");
         PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Enter your password");
+
 
         Button loginButton = new Button("Login");
+        loginButton.setMaxWidth(Double.MAX_VALUE);
 
-        VBox layout = new VBox(10);
-        layout.setStyle("-fx-padding: 20;");
-        layout.getChildren().addAll(
-                roleLabel, roleComboBox,
-                usernameLabel, usernameTextField,
-                passwordLabel, passwordField,
-                loginButton
-        );
+        // Title header
+        Label titleLabel = new Label("Remote Health Monitoring System");
+        titleLabel.getStyleClass().add("dashboard-title");
 
+        HBox headerBox = new HBox();
+        headerBox.getStyleClass().add("dashboard-header");
+        headerBox.getChildren().add(titleLabel);
+        headerBox.setPrefWidth(Double.MAX_VALUE);
+
+        VBox formContainer = new VBox(10);
+        formContainer.getStyleClass().add("login-container");
+        formContainer.getChildren().addAll(
+            roleLabel, roleComboBox,
+            usernameLabel, usernameTextField,
+            passwordLabel, passwordField,
+            loginButton
+            );
+            // Center the form on screen
+            BorderPane centeringPane = new BorderPane();
+            centeringPane.setCenter(formContainer);
+            centeringPane.setPadding(new Insets(40, 20, 20, 20));
+            
+            // Main layout
+            BorderPane mainLayout = new BorderPane();
+            mainLayout.setTop(headerBox);
+            mainLayout.setCenter(centeringPane);
+            
+            VBox layout = new VBox(10);
+            layout.setStyle("-fx-padding: 20;");
+            layout.getChildren().addAll(
+                    roleLabel, roleComboBox,
+                    usernameLabel, usernameTextField,
+                    passwordLabel, passwordField,
+                    loginButton
+            );
+            
         loginButton.setOnAction(e -> {
             String role = roleComboBox.getValue();
             String enteredUsername = usernameTextField.getText();
@@ -88,12 +124,17 @@ public class LoginScreen extends Application {
             primaryStage.close();
         });
 
-        Scene scene = new Scene(layout, 300, 280);
+        Scene scene = new Scene(layout, 400, 500);
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(event -> {
             Platform.exit();
             System.exit(0);  // Force JVM shutdown
         });
+        // Replace the line causing the error (around line 304)
+        String cssPath = com.rpms.Main.getStylesheetPath();
+        if (cssPath != null) {
+            scene.getStylesheets().add(cssPath);
+        }
 
         primaryStage.show();
     }

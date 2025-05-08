@@ -43,6 +43,12 @@ public class AdminDashboard extends Application {
             Platform.exit();
             System.exit(0);  // Force JVM shutdown
         });
+        // Replace the line causing the error (around line 304)
+        String cssPath = com.rpms.Main.getStylesheetPath();
+        if (cssPath != null) {
+            scene.getStylesheets().add(cssPath);
+        }
+        
         primaryStage.show();
     }
 
