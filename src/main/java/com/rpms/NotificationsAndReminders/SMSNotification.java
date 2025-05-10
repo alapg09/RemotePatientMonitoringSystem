@@ -5,7 +5,7 @@ package com.rpms.NotificationsAndReminders;
  * Currently implements a simulation of SMS sending via console output.
  * In a production environment, this would connect to an SMS gateway service.
  */
-public class SMSNotification implements Notifiable {
+public class    SMSNotification implements Notifiable {
     /** Phone number to send the SMS to */
     private String phoneNumber;
     

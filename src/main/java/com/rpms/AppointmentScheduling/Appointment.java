@@ -72,14 +72,7 @@ public class Appointment implements Serializable {
 
     // ===== Setters =====
     
-    /**
-     * Sets the date and time of the appointment
-     * @param datetime New appointment date/time
-     */
-    public void setDate(LocalDateTime datetime) {
-        this.datetime = datetime;
-    }
-    
+
     /**
      * Sets the status of the appointment with validation.
      * Only accepts valid status values: "Pending", "Approved", or "Cancelled".

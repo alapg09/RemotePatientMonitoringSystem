@@ -74,33 +74,7 @@ public abstract class User implements Serializable {
      */
     public String getPhoneNumber() { return phoneNumber; }
     
-    /**
-     * @return The user's username
-     */
-    public String getUsername() { return username; }
-    
-    /**
-     * Sets the user's email address
-     * @param email New email address
-     */
-    public void setEmail(String email) { this.email = email; }
-    
-    /**
-     * Sets the user's phone number
-     * @param phoneNumber New phone number
-     */
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-    
-    /**
-     * Sets the user's username
-     * @param username New username
-     */
-    public void setUsername(String username) { this.username = username; }
-    
-    /**
-     * Sets the user's password
-     * @param password New password
-     */
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -159,14 +133,5 @@ public abstract class User implements Serializable {
         User user = (User) obj;
         // Users are equal if they have the same ID
         return this.id.equals(user.id);
-    }
-    
-    /**
-     * Generates a hash code for this user based on ID
-     * @return Hash code value
-     */
-    @Override
-    public int hashCode() {
-        return id.hashCode();
     }
 }

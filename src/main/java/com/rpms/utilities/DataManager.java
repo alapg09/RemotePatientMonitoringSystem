@@ -181,16 +181,4 @@ public class DataManager {
                           " - Content: " + message.getContent());
     }
 
-    /**
-     * Returns all chat histories for a specific user
-     */
-    public static ArrayList<ChatHistory> getChatHistoriesForUser(String userId) {
-        ArrayList<ChatHistory> userChatHistories = new ArrayList<>();
-        for (ChatHistory history : chatHistories) {
-            if (history.getUser1Id().equals(userId) || history.getUser2Id().equals(userId)) {
-                userChatHistories.add(history);
-            }
-        }
-        return userChatHistories;
-    }
 }

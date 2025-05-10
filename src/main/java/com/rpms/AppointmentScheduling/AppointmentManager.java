@@ -140,13 +140,44 @@ public class AppointmentManager {
      */
     public static void approveVideoCall(VideoCall videocall) {
         videocall.setStatus("Approved");
-        System.out.println("Video call approved: " + videocall.getStartTime());
-        // add the patient to doctor when appointment is approved
-        if(!videocall.getDoctor().getPatients().contains(videocall.getPatient())){
-            videocall.getDoctor().addPatient(videocall.getPatient());
+        System.out.println("VideoCall approved: " + videocall.toString());
+
+        // Get the authoritative doctor from Administrator's list
+        Doctor authoritativeDoctor = null;
+        for (Doctor d : Administrator.getDoctors()) {
+            if (d.getId().equals(videocall.getDoctor().getId())) {
+                authoritativeDoctor = d;
+                break;
+            }
         }
+
+        // Get the authoritative patient from Administrator's list
+        Patient authoritativePatient = null;
+        for (Patient p : Administrator.getPatients()) {
+            if (p.getId().equals(videocall.getPatient().getId())) {
+                authoritativePatient = p;
+                break;
+            }
+        }
+
+        // Only proceed if we found both
+        if (authoritativeDoctor != null && authoritativePatient != null) {
+            // Add patient to the doctor's list if not already there
+            if (!authoritativeDoctor.getPatients().contains(authoritativePatient)) {
+                authoritativeDoctor.addPatient(authoritativePatient);
+                System.out.println("Patient " + authoritativePatient.getName() +
+                        " added to Dr. " + authoritativeDoctor.getName() + "'s list");
+            }
+
+            // Update the appointment with these authoritative references
+            videocall.setDoctor(authoritativeDoctor);
+            videocall.setPatient(authoritativePatient);
+        }
+
         DataManager.saveAllData(); // Auto-save
-    }
+        System.out.println("Appointment approved for: " + videocall.getPatient().getName());
+    } // Auto-save
+
 
     // no toString method is needed here because the appointment manager is not an object that needs to be printed
 }

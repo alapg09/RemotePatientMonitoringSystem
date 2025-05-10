@@ -109,16 +109,6 @@ public class Administrator extends User {
         // Adding the log to the system logs
         systemLogs.add("System logs cleared.");
     }
-    
-    /**
-     * Displays all system logs
-     */
-    public static void viewSystemLogs() {
-        System.out.println("System Logs:");
-        for (String log : systemLogs) {
-            System.out.println(log);
-        }
-    }
 
     //------------------------------
     // User Registration Methods
