@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
  */
 public class Patient extends User {
     /** Database to store the vital signs of the patient */
-    private final VitalsDatabase vitalsDatabase;
+    private  VitalsDatabase vitalsDatabase;
     
     /** List to store previous feedback given by doctors */
     private final ArrayList<Feedback> feedbacks;

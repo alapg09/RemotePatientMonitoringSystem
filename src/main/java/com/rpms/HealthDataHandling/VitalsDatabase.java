@@ -146,17 +146,7 @@ public class VitalsDatabase implements Serializable {
         stage.setScene(scene);
         stage.show();
     }
-    
-    /**
-     * Displays all vital signs in the console
-     * Used for debugging and text-based interfaces
-     */
-    public void displayVitals() {
-        System.out.println("Vital Signs: ");
-        for (VitalSign v : vitals) {
-            System.out.println(v);
-        }
-    }
+
     
     /**
      * Custom deserialization method to handle transient fields

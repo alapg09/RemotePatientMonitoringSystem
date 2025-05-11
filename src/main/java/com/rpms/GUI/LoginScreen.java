@@ -20,7 +20,7 @@ public class LoginScreen extends Application {
     /**
      * Initializes and displays the login screen interface.
      * Sets up the GUI components and event handlers.
-     * 
+     *
      * @param primaryStage The primary stage for this application
      */
     @Override
