@@ -1,5 +1,6 @@
 package com.rpms.GUI;
 
+import com.rpms.Main;
 import com.rpms.AppointmentScheduling.Appointment;
 import com.rpms.ChatAndVideoConsultation.VideoCall;
 import com.rpms.DoctorPatientInteraction.Feedback;
@@ -63,6 +64,7 @@ public class DoctorDashboard {
                 }
             }
         }
+        
 
         // Set the refreshed list back to the doctor
         doctor.getPatients().clear();
@@ -281,6 +283,18 @@ public class DoctorDashboard {
         // === Add Tabs to TabPane ===
         tabPane.getTabs().addAll(patientTab, appointmentsTab, chatTab);
 
+        // Create Logout Button
+        Button logoutButton = new Button("Logout");
+        logoutButton.setOnAction(e -> {
+            stage.close(); // Close the current dashboard
+            Main.logout(); // Call the logout method
+        });
+
+        // Add Logout Button to Layout
+        VBox layout = new VBox(10, logoutButton, tabPane);
+        layout.setPadding(new Insets(10));
+
+
         // Only show critical vitals alert if it hasn't been shown yet in this session
         if (!remindersShown) {
             String msg = doctor.patientCriticalVitalDetection();
@@ -294,7 +308,7 @@ public class DoctorDashboard {
             remindersShown = true;
         }
 
-        Scene scene = new Scene(tabPane, 900, 600);
+        Scene scene = new Scene(layout, 900, 600);
         stage.setScene(scene);
         stage.setOnCloseRequest(event -> {
             Platform.exit();

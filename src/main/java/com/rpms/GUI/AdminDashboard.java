@@ -1,5 +1,6 @@
 package com.rpms.GUI;
 
+import com.rpms.Main;
 import com.rpms.UserManagement.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -10,6 +11,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
 
 public class AdminDashboard extends Application {
 
@@ -32,11 +34,22 @@ public class AdminDashboard extends Application {
         Tab logsTab = new Tab("System Logs", createLogsTab());
         logsTab.setClosable(false);
 
+
+
         // add tabs to tabpane
         tabPane.getTabs().addAll(doctorsTab, patientsTab, adminsTab, logsTab);
 
+        // Create Logout Button
+        Button logoutButton = new Button("Logout");
+        logoutButton.setOnAction(e -> {
+            primaryStage.close(); // Close the current dashboard
+            Main.logout(); // Call the logout method
+        });
+         // Add Logout Button to Layout
+        VBox layout = new VBox(10, logoutButton, tabPane);
+        layout.setPadding(new Insets(10));
         // set up the scene
-        Scene scene = new Scene(tabPane, 800, 600);
+        Scene scene = new Scene(layout, 800, 600);
         primaryStage.setScene(scene);
 
         primaryStage.setOnCloseRequest(event -> {

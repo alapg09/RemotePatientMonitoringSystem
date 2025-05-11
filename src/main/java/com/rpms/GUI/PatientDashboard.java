@@ -1,6 +1,7 @@
 // GUI/PatientDashboard.java
 package com.rpms.GUI;
 
+import com.rpms.Main;
 import com.rpms.AppointmentScheduling.Appointment;
 import com.rpms.ChatAndVideoConsultation.VideoCall;
 import com.rpms.UserManagement.*;
@@ -56,6 +57,8 @@ public class PatientDashboard {
 
         BorderPane root = new BorderPane();
 
+
+
         // Panic button on top right
         Button panicBtn = new Button("Panic");
         panicBtn.setOnAction(e -> {
@@ -66,7 +69,17 @@ public class PatientDashboard {
                 showAlert("Panic Alert", "Panic button pressed with message: " + message);
             });
         });
-        HBox topBar = new HBox(panicBtn);
+
+
+        // Logout button on top left
+        Button logoutBtn = new Button("Logout");
+        logoutBtn.setOnAction(e -> {
+            stage.close(); // Close the current dashboard
+            Main.logout(); // Call the logout method
+        });
+
+
+        HBox topBar = new HBox(10, logoutBtn, panicBtn);
         topBar.setAlignment(Pos.TOP_RIGHT);
         topBar.setPadding(new Insets(10));
         root.setTop(topBar);

@@ -91,4 +91,15 @@ public class Main {
             return null;
         }
     }
+    public static void logout() {
+        Platform.runLater(() -> {
+            try {
+                System.out.println("Logging out...");
+                new LoginScreen().start(new javafx.stage.Stage());
+            } catch (Exception e) {
+                System.err.println("Error during logout: " + e.getMessage());
+            }
+        });
+    }
+    
 }
