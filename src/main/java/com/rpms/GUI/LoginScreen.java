@@ -205,12 +205,16 @@ public class LoginScreen extends Application {
         // same email is used for checking purposes
         Doctor doctor = new Doctor("doc1", "Khurram Shabbir", "+92-316-5668990", "rpms502082.test@gmail.com", "kshabbir.doc", "kshabbir123");
         Patient patient = new Patient("pat1", "Ali Khan", "+92-322-9328676", "rpms502082.test@gmail.com", "akhan", "akhan123", new ArrayList<>(), doctor);
-        Administrator admin = new Administrator("adm1", "Alap Gohar", "+92-316-5666994", "alapgohar123@gmail.com", "agohar.adm", "502082.default.adm");
+        Administrator admin = new Administrator("adm1", "Alap Gohar", "+92-316-5566984", "alapgohar123@gmail.com", "agohar.adm", "502082.default.adm");
+        Doctor doctor2 = new Doctor("doc2", "Aurangzeb Tarar", "+92-322-9329686", "rpms502082.test@gmail.com", "atarar.doc", "atarar123");
+        Patient patient2 = new Patient("pat2", "Ali Raza", "+92-322-9239762", "rpms502082.test@gmail.com", "araza", "araza123", new ArrayList<>(), doctor2);
 
         // Register users
         Administrator.registerPatient(patient);
         Administrator.registerDoctor(doctor);
         Administrator.registerAdministrator(admin);
+        Administrator.registerPatient(patient2);
+        Administrator.registerDoctor(doctor2);
     }
 
     /**

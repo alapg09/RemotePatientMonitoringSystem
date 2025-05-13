@@ -11,8 +11,6 @@ D:\MyCODES\rpms\src\main\java\com\rpms\GUI\AdminDashboard.java
 D:\MyCODES\rpms\src\main\java\com\rpms\utilities\SerializationUtil.java
 D:\MyCODES\rpms\src\main\java\com\rpms\EmergencyAlertSystem\NotificationService.java
 D:\MyCODES\rpms\src\main\java\com\rpms\GUI\DoctorDashboard.java
-D:\MyCODES\rpms\src\main\java\com\rpms\DoctorPatientInteraction\MedicalHistory.java
-D:\MyCODES\rpms\src\main\java\com\rpms\ChatAndVideoConsultation\ChatServer.java
 D:\MyCODES\rpms\src\main\java\com\rpms\NotificationsAndReminders\Notifiable.java
 D:\MyCODES\rpms\src\main\java\com\rpms\EmergencyAlertSystem\EmergencyAlert.java
 D:\MyCODES\rpms\src\main\java\com\rpms\GUI\PatientDashboard.java
@@ -27,7 +25,6 @@ D:\MyCODES\rpms\src\main\java\com\rpms\NotificationsAndReminders\SMSNotification
 D:\MyCODES\rpms\src\main\java\com\rpms\Reports\ReportGenerator.java
 D:\MyCODES\rpms\src\main\java\com\rpms\UserManagement\Administrator.java
 D:\MyCODES\rpms\src\main\java\com\rpms\HealthDataHandling\VitalSign.java
-D:\MyCODES\rpms\src\main\java\com\rpms\ChatAndVideoConsultation\ChatClient.java
 D:\MyCODES\rpms\src\main\java\com\rpms\HealthDataHandling\VitalsDatabase.java
 D:\MyCODES\rpms\src\main\java\com\rpms\AppointmentScheduling\AppointmentManager.java
 D:\MyCODES\rpms\src\main\java\com\rpms\ChatAndVideoConsultation\ChatManager.java
