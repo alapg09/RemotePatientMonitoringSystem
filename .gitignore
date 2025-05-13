@@ -71,3 +71,8 @@ logs/
 !.mvn/wrapper/maven-wrapper.jar
 !mvnw
 !mvnw.cmd
+
+# Ignore video files
+# Video files
+*.mp4
+demo_video/Group2_502082_rpms_demo.mp4
