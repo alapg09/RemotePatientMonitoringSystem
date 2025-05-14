@@ -26,7 +26,7 @@ public class ChatWindow {
     /** The current user (patient or doctor) using this chat window */
     private User currentUser;
     
-    /** The us  er the current user is chatting with */
+    /** The user the current user is chatting with */
     private User chatPartner;
     
     /** The window stage for this chat */
