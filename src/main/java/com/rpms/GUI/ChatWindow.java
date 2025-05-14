@@ -1,22 +1,25 @@
-package com.rpms.GUI;
+package com.rpms.GUI; // GUI components package for the application
 
+// Import chat system and user management related classes
 import com.rpms.ChatAndVideoConsultation.ChatManager;
 import com.rpms.ChatAndVideoConsultation.ChatMessage;
 import com.rpms.ChatAndVideoConsultation.ChatHistory;
 import com.rpms.UserManagement.User;
 import com.rpms.utilities.DataManager;
 
-import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.stage.Stage;
+// JavaFX UI imports
+import javafx.application.Platform; // For updating UI from background threads
+import javafx.geometry.Insets; // For UI padding and spacing
+import javafx.geometry.Pos; // For alignment of UI elements
+import javafx.scene.Scene; // Container for all JavaFX content
+import javafx.scene.control.*; // UI control elements like buttons and text fields
+import javafx.scene.layout.*; // Layout containers for organizing UI elements
+import javafx.stage.Stage; // Top-level JavaFX container (window)
 
-import java.io.*;
-import java.net.Socket;
-import java.net.SocketException;
+// Java IO and networking imports
+import java.io.*; // For input/output streams
+import java.net.Socket; // For network communication
+import java.net.SocketException; // For handling socket errors
 
 /**
  * Provides a chat interface for communication between doctors and patients.
@@ -24,34 +27,34 @@ import java.net.SocketException;
  */
 public class ChatWindow {
     /** The current user (patient or doctor) using this chat window */
-    private User currentUser;
+    private User currentUser; // Stores reference to the user who opened this chat
     
     /** The user the current user is chatting with */
-    private User chatPartner;
+    private User chatPartner; // Stores reference to the conversation partner
     
     /** The window stage for this chat */
-    private Stage stage;
+    private Stage stage; // JavaFX window container for this chat interface
     
     /** Text area to display the chat history and messages */
-    private TextArea chatArea;
+    private TextArea chatArea; // Displays all chat messages
     
     /** Socket connection to the chat server */
-    private Socket socket;
+    private Socket socket; // Network connection to the chat server
     
     /** Output stream to send messages to the server */
-    private ObjectOutputStream out;
+    private ObjectOutputStream out; // Serializes and sends Java objects to server
     
     /** Input stream to receive messages from the server */
-    private ObjectInputStream in;
+    private ObjectInputStream in; // Receives and deserializes Java objects from server
     
     /** Flag indicating if connected to the chat server */
-    private boolean isConnected = false;
+    private boolean isConnected = false; // Tracks connection state
     
     /** Thread for receiving messages asynchronously */
-    private Thread receiveThread;
+    private Thread receiveThread; // Background thread that listens for incoming messages
     
     /** Text field for entering messages */
-    private TextField messageField;
+    private TextField messageField; // Where user types new messages
 
     /**
      * Creates a new chat window between two users.
@@ -60,9 +63,9 @@ public class ChatWindow {
      * @param chatPartner The user to chat with
      */
     public ChatWindow(User currentUser, User chatPartner) {
-        this.currentUser = currentUser;
-        this.chatPartner = chatPartner;
-        this.stage = new Stage();
+        this.currentUser = currentUser; // Set the current user
+        this.chatPartner = chatPartner; // Set the chat partner
+        this.stage = new Stage(); // Create a new window
     }
 
     /**
@@ -70,61 +73,61 @@ public class ChatWindow {
      * Sets up UI components, loads chat history, and connects to the chat server.
      */
     public void show() {
-        stage.setTitle("Chat with " + chatPartner.getName());
+        stage.setTitle("Chat with " + chatPartner.getName()); // Set window title with partner's name
 
         // Create UI components
-        chatArea = new TextArea();
-        chatArea.setEditable(false);
-        chatArea.setWrapText(true);
-        chatArea.setPrefHeight(350);
-        messageField = new TextField();
-        TextField messageField = new TextField();
-        messageField.setPromptText("Type your message here...");
-        messageField.setPrefHeight(30);
+        chatArea = new TextArea(); // Create multi-line text display area
+        chatArea.setEditable(false); // Prevent user from editing message history
+        chatArea.setWrapText(true); // Enable text wrapping for long messages
+        chatArea.setPrefHeight(350); // Set preferred height for chat display
+        messageField = new TextField(); // Create field for message input
+        TextField messageField = new TextField(); // Create a new TextField (note: this duplicates the field above)
+        messageField.setPromptText("Type your message here..."); // Set placeholder text
+        messageField.setPrefHeight(30); // Set preferred height for input field
 
-        Button sendButton = new Button("Send");
-        sendButton.setPrefHeight(30);
+        Button sendButton = new Button("Send"); // Create button to send messages
+        sendButton.setPrefHeight(30); // Set preferred height for button
         
         // Status indicator
-        Label statusLabel = new Label("Disconnected");
-        statusLabel.setStyle("-fx-text-fill: red;");
+        Label statusLabel = new Label("Disconnected"); // Create label showing connection status
+        statusLabel.setStyle("-fx-text-fill: red;"); // Set text color to red for disconnected state
 
         // Layout
-        HBox inputBox = new HBox(5, messageField, sendButton);
-        inputBox.setPadding(new Insets(5));
-        HBox.setHgrow(messageField, Priority.ALWAYS);
+        HBox inputBox = new HBox(5, messageField, sendButton); // Horizontal container for input field and send button
+        inputBox.setPadding(new Insets(5)); // Add padding around the input area
+        HBox.setHgrow(messageField, Priority.ALWAYS); // Allow input field to grow horizontally
 
-        HBox statusBox = new HBox(5, new Label("Status:"), statusLabel);
-        statusBox.setPadding(new Insets(5));
-        statusBox.setAlignment(Pos.CENTER_LEFT);
+        HBox statusBox = new HBox(5, new Label("Status:"), statusLabel); // Horizontal container for status display
+        statusBox.setPadding(new Insets(5)); // Add padding around status area
+        statusBox.setAlignment(Pos.CENTER_LEFT); // Align status to the left
 
-        VBox root = new VBox(5, statusBox, chatArea, inputBox);
-        root.setPadding(new Insets(10));
-        VBox.setVgrow(chatArea, Priority.ALWAYS);
+        VBox root = new VBox(5, statusBox, chatArea, inputBox); // Vertical container for all UI elements
+        root.setPadding(new Insets(10)); // Add padding around all content
+        VBox.setVgrow(chatArea, Priority.ALWAYS); // Allow chat area to grow vertically
 
         // Event handlers
-        sendButton.setOnAction(e -> sendMessage(messageField.getText()));
-        messageField.setOnAction(e -> sendMessage(messageField.getText()));
+        sendButton.setOnAction(e -> sendMessage(messageField.getText())); // Send message when button clicked
+        messageField.setOnAction(e -> sendMessage(messageField.getText())); // Send message when Enter pressed
 
         // Show window
-        Scene scene = new Scene(root, 400, 500);
-        stage.setScene(scene);
+        Scene scene = new Scene(root, 400, 500); // Create scene with root container and dimensions
+        stage.setScene(scene); // Set the scene in the window
         // Replace the line causing the error (around line 304)
-        String cssPath = com.rpms.Main.getStylesheetPath();
+        String cssPath = com.rpms.Main.getStylesheetPath(); // Get CSS styling path
         if (cssPath != null) {
-            scene.getStylesheets().add(cssPath);
+            scene.getStylesheets().add(cssPath); // Apply CSS styling if available
         }
 
-        stage.show();
+        stage.show(); // Display the window
 
         // Load chat history - IMPORTANT: Do this first
-        loadChatHistory();
+        loadChatHistory(); // Load previous messages before connecting
 
         // Connect to chat server
-        connectToServer(statusLabel);
+        connectToServer(statusLabel); // Start connection to chat server
         
         // Handle window close
-        stage.setOnCloseRequest(e -> disconnect());
+        stage.setOnCloseRequest(e -> disconnect()); // Clean up when window is closed
     }
 
     /**
@@ -133,24 +136,24 @@ public class ChatWindow {
      */
     private void loadChatHistory() {
         // Clear the chat area first
-        chatArea.clear();
+        chatArea.clear(); // Remove any existing content
         
         // Get fresh chat history directly
-        ChatHistory history = DataManager.getChatHistory(currentUser.getId(), chatPartner.getId());
+        ChatHistory history = DataManager.getChatHistory(currentUser.getId(), chatPartner.getId()); // Retrieve stored messages
         
         if (history.getMessages().isEmpty()) {
-            chatArea.appendText("No previous messages.\n");
+            chatArea.appendText("No previous messages.\n"); // Show message if no history exists
             return;
         }
         
         // Add all messages to the chat area
         for (ChatMessage message : history.getMessages()) {
-            appendMessage(message);
+            appendMessage(message); // Display each message with proper formatting
         }
         
         // Log messages found
         System.out.println("Loaded " + history.getMessages().size() + " messages for chat between " + 
-                          currentUser.getId() + " and " + chatPartner.getId());
+                          currentUser.getId() + " and " + chatPartner.getId()); // Log number of messages loaded
     }
 
     /**
@@ -163,40 +166,40 @@ public class ChatWindow {
         new Thread(() -> {
             try {
                 // Connect to the server with the current port
-                int port = ChatManager.getCurrentPort();
-                socket = new Socket("localhost", port);
+                int port = ChatManager.getCurrentPort(); // Get port number from chat manager
+                socket = new Socket("localhost", port); // Connect to server on localhost
                 
                 // Create streams in correct order to avoid deadlock
-                out = new ObjectOutputStream(socket.getOutputStream());
-                out.flush();
-                in = new ObjectInputStream(socket.getInputStream());
+                out = new ObjectOutputStream(socket.getOutputStream()); // Create output stream first
+                out.flush(); // Flush header information
+                in = new ObjectInputStream(socket.getInputStream()); // Then create input stream
                 
                 // Send user ID to identify this connection
-                out.writeObject(currentUser.getId());
-                out.flush();
+                out.writeObject(currentUser.getId()); // Tell server who is connecting
+                out.flush(); // Ensure ID is sent immediately
                 
-                isConnected = true;
+                isConnected = true; // Update connection state
                 
                 Platform.runLater(() -> {
-                    statusLabel.setText("Connected");
-                    statusLabel.setStyle("-fx-text-fill: green;");
+                    statusLabel.setText("Connected"); // Update UI to show connected state
+                    statusLabel.setStyle("-fx-text-fill: green;"); // Change status color to green
                 });
                 
                 // Start thread to receive messages
-                receiveMessages();
+                receiveMessages(); // Begin listening for incoming messages
                 
             } catch (IOException e) {
                 Platform.runLater(() -> {
-                    statusLabel.setText("Connection Failed");
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Connection Error");
-                    alert.setHeaderText("Failed to connect to chat server");
-                    alert.setContentText("Please try again later: " + e.getMessage());
-                    alert.show();
+                    statusLabel.setText("Connection Failed"); // Update UI to show failure
+                    Alert alert = new Alert(Alert.AlertType.ERROR); // Create error popup
+                    alert.setTitle("Connection Error"); // Set popup title
+                    alert.setHeaderText("Failed to connect to chat server"); // Set main error message
+                    alert.setContentText("Please try again later: " + e.getMessage()); // Show error details
+                    alert.show(); // Display the error popup
                 });
-                System.err.println("Error connecting to chat server: " + e.getMessage());
+                System.err.println("Error connecting to chat server: " + e.getMessage()); // Log the error
             }
-        }).start();
+        }).start(); // Start this process in a background thread
     }
 
     /**
@@ -207,37 +210,37 @@ public class ChatWindow {
         receiveThread = new Thread(() -> {
             try {
                 while (isConnected) {
-                    Object obj = in.readObject();
+                    Object obj = in.readObject(); // Wait for and read next object from server
                     
                     if (obj instanceof ChatMessage) {
-                        ChatMessage message = (ChatMessage) obj;
+                        ChatMessage message = (ChatMessage) obj; // Cast to chat message type
                         
                         // Only process messages from our chat partner
                         if (message.getSenderId().equals(chatPartner.getId())) {
-                            Platform.runLater(() -> appendMessage(message));
+                            Platform.runLater(() -> appendMessage(message)); // Update UI on JavaFX thread
                         }
                     }
                 }
             } catch (SocketException e) {
                 // Socket closed, normal disconnect
                 if (isConnected) {
-                    System.out.println("Chat connection closed");
+                    System.out.println("Chat connection closed"); // Log normal disconnection
                 }
             } catch (EOFException e) {
                 // End of stream, normal disconnect
                 if (isConnected) {
-                    System.out.println("Chat connection ended");
+                    System.out.println("Chat connection ended"); // Log normal stream end
                 }
             } catch (IOException | ClassNotFoundException e) {
                 if (isConnected) {
-                    System.err.println("Error receiving messages: " + e.getMessage());
+                    System.err.println("Error receiving messages: " + e.getMessage()); // Log unexpected errors
                 }
             } finally {
-                disconnect();
+                disconnect(); // Clean up resources
             }
         });
-        receiveThread.setDaemon(true);
-        receiveThread.start();
+        receiveThread.setDaemon(true); // Make thread terminate when main app closes
+        receiveThread.start(); // Start the receiving thread
     }
 
     /**
@@ -247,44 +250,44 @@ public class ChatWindow {
      * @param content The text content of the message to send
      */
     private void sendMessage(String content) {
-        if (content == null || content.trim().isEmpty()) return;
+        if (content == null || content.trim().isEmpty()) return; // Don't send empty messages
         
         if (!isConnected) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Not Connected");
-            alert.setHeaderText("You are not connected to the chat server");
-            alert.setContentText("Please try again later");
-            alert.show();
+            Alert alert = new Alert(Alert.AlertType.WARNING); // Create warning popup
+            alert.setTitle("Not Connected"); // Set popup title
+            alert.setHeaderText("You are not connected to the chat server"); // Set main warning message
+            alert.setContentText("Please try again later"); // Set additional details
+            alert.show(); // Display warning
             return;
         }
         
         try {
             // Create message object
             ChatMessage message = new ChatMessage(
-                currentUser.getId(),
-                currentUser.getName(),
-                chatPartner.getId(),
-                content
+                currentUser.getId(), // Sender ID
+                currentUser.getName(), // Sender name
+                chatPartner.getId(), // Recipient ID
+                content // Message text
             );
             
             // Send message to server
-            out.writeObject(message);
-            out.flush();
+            out.writeObject(message); // Serialize and send message object
+            out.flush(); // Ensure message is sent immediately
             out.reset(); // Important: reset object stream cache
             
             // Add to UI
-            appendMessage(message);
+            appendMessage(message); // Display sent message in chat area
             
             // Clear input field
-            messageField.clear();
+            messageField.clear(); // Remove sent text from input field
             
         } catch (IOException e) {
-            System.err.println("Error sending message: " + e.getMessage());
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Send Error");
-            alert.setHeaderText("Failed to send message");
-            alert.setContentText(e.getMessage());
-            alert.show();
+            System.err.println("Error sending message: " + e.getMessage()); // Log error
+            Alert alert = new Alert(Alert.AlertType.ERROR); // Create error popup
+            alert.setTitle("Send Error"); // Set popup title
+            alert.setHeaderText("Failed to send message"); // Set main error message
+            alert.setContentText(e.getMessage()); // Show error details
+            alert.show(); // Display error
         }
     }
 
@@ -298,12 +301,12 @@ public class ChatWindow {
         String formattedMessage;
         if (message.getSenderId().equals(currentUser.getId())) {
             // This is a message sent by the current user
-            formattedMessage = "You: " + message.getContent() + "\n";
+            formattedMessage = "You: " + message.getContent() + "\n"; // Format outgoing messages
         } else {
             // This is a message received from the chat partner
-            formattedMessage = chatPartner.getName() + ": " + message.getContent() + "\n";
+            formattedMessage = chatPartner.getName() + ": " + message.getContent() + "\n"; // Format incoming messages
         }
-        chatArea.appendText(formattedMessage);
+        chatArea.appendText(formattedMessage); // Add the formatted message to the chat display
     }
 
     /**
@@ -311,21 +314,21 @@ public class ChatWindow {
      * Called when the chat window is closed or connection is lost.
      */
     private void disconnect() {
-        if (!isConnected) return;
+        if (!isConnected) return; // Don't disconnect if already disconnected
         
-        isConnected = false;
+        isConnected = false; // Update connection state
         
         try {
             if (receiveThread != null) {
-                receiveThread.interrupt();
+                receiveThread.interrupt(); // Stop the message receiving thread
             }
             
-            if (out != null) out.close();
-            if (in != null) in.close();
-            if (socket != null && !socket.isClosed()) socket.close();
+            if (out != null) out.close(); // Close output stream
+            if (in != null) in.close(); // Close input stream
+            if (socket != null && !socket.isClosed()) socket.close(); // Close network socket
             
         } catch (IOException e) {
-            System.err.println("Error disconnecting: " + e.getMessage());
+            System.err.println("Error disconnecting: " + e.getMessage()); // Log cleanup errors
         }
     }
 }

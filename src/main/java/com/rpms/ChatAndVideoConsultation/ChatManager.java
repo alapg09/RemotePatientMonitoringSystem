@@ -1,23 +1,25 @@
-package com.rpms.ChatAndVideoConsultation;
+package com.rpms.ChatAndVideoConsultation; // Package for chat and video consultation functionality
 
+// Import necessary classes for user management
 import com.rpms.UserManagement.Administrator;
 import com.rpms.UserManagement.Doctor;
 import com.rpms.UserManagement.Patient;
 import com.rpms.UserManagement.User;
-import com.rpms.utilities.DataManager;
+import com.rpms.utilities.DataManager; // For persistent data storage
 
+// Import Java IO and networking classes
 import java.io.*;
-import java.net.BindException;
-import java.net.ConnectException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.ArrayList;
+import java.net.BindException; // For handling port binding issues
+import java.net.ConnectException; // For handling connection failures
+import java.net.ServerSocket; // For creating the server endpoint
+import java.net.Socket; // For client-server connections
+import java.net.SocketException; // For handling socket errors
+import java.util.ArrayList; // For storing lists of users
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ConcurrentHashMap; // Thread-safe map implementation
+import java.util.concurrent.ExecutorService; // For managing thread execution
+import java.util.concurrent.Executors; // For creating thread pools
 
 /**
  * Central manager for the real-time chat system.
@@ -26,22 +28,22 @@ import java.util.concurrent.Executors;
  */
 public class ChatManager {
     /** Base port to try first when starting server */
-    private static final int BASE_PORT = 12345;
+    private static final int BASE_PORT = 12345; // Starting port number to attempt
     
     /** Current port the server is running on */
-    private static int currentPort = BASE_PORT;
+    private static int currentPort = BASE_PORT; // Tracks which port is currently in use
     
     /** The server socket accepting client connections */
-    private static ServerSocket serverSocket;
+    private static ServerSocket serverSocket; // Listens for incoming client connections
     
     /** Flag indicating if the server is currently running */
-    private static boolean isRunning = false;
+    private static boolean isRunning = false; // Controls server operation state
     
     /** Map of connected users: user ID → ClientHandler */
-    private static final Map<String, ClientHandler> connectedUsers = new ConcurrentHashMap<>();
+    private static final Map<String, ClientHandler> connectedUsers = new ConcurrentHashMap<>(); // Thread-safe map for active users
     
     /** Thread pool for handling multiple client connections concurrently */
-    private static ExecutorService threadPool;
+    private static ExecutorService threadPool; // Manages threads for client handlers
     
     /**
      * Starts the chat server on an available port.
@@ -49,40 +51,40 @@ public class ChatManager {
      * Creates a thread pool for handling client connections.
      */
     public static void startServer() {
-        if (isRunning) return;
+        if (isRunning) return; // Prevents starting server twice
         
         // Try up to 10 ports
-        for (int portOffset = 0; portOffset < 10; portOffset++) {
-            currentPort = BASE_PORT + portOffset;
+        for (int portOffset = 0; portOffset < 10; portOffset++) { // Attempt multiple ports if needed
+            currentPort = BASE_PORT + portOffset; // Calculate next port to try
             try {
-                serverSocket = new ServerSocket(currentPort);
-                isRunning = true;
-                threadPool = Executors.newCachedThreadPool();
+                serverSocket = new ServerSocket(currentPort); // Attempt to create server socket on this port
+                isRunning = true; // Mark server as running
+                threadPool = Executors.newCachedThreadPool(); // Create flexible thread pool that grows as needed
                 
                 // Start a thread to listen for incoming connections
-                new Thread(() -> {
+                new Thread(() -> { // Anonymous thread for accepting connections
                     try {
                         System.out.println("Chat server started on port " + currentPort);
-                        while (isRunning) {
+                        while (isRunning) { // Continue while server should be running
                             try {
-                                Socket clientSocket = serverSocket.accept();
-                                ClientHandler handler = new ClientHandler(clientSocket);
-                                threadPool.execute(handler);
+                                Socket clientSocket = serverSocket.accept(); // Block until client connects
+                                ClientHandler handler = new ClientHandler(clientSocket); // Create handler for this client
+                                threadPool.execute(handler); // Submit handler to thread pool
                             } catch (IOException e) {
-                                if (isRunning) {
+                                if (isRunning) { // Only log errors if server should be running
                                     System.err.println("Error accepting client connection: " + e.getMessage());
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        if (isRunning) {
+                        if (isRunning) { // Only log errors if server should be running
                             System.err.println("Server thread error: " + e.getMessage());
                         }
                     }
-                }).start();
+                }).start(); // Start the connection acceptance thread
                 
                 // Successfully started server
-                return;
+                return; // Exit method after successful start
                 
             } catch (BindException e) {
                 // Port is in use, try next one
@@ -103,7 +105,7 @@ public class ChatManager {
      * @return The current server port
      */
     public static int getCurrentPort() {
-        return currentPort;
+        return currentPort; // Provides port number to clients
     }
     
     /**
@@ -111,21 +113,21 @@ public class ChatManager {
      * Closes all client connections and shuts down the thread pool.
      */
     public static void stopServer() {
-        isRunning = false;
+        isRunning = false; // Signal that the server should stop
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
-                serverSocket.close();
+                serverSocket.close(); // Close main server socket
             }
             
             if (threadPool != null) {
-                threadPool.shutdown();
+                threadPool.shutdown(); // Shut down the thread pool gracefully
             }
             
             // Close all client connections
-            for (ClientHandler handler : connectedUsers.values()) {
-                handler.closeConnection();
+            for (ClientHandler handler : connectedUsers.values()) { // Iterate through all connected clients
+                handler.closeConnection(); // Close each connection
             }
-            connectedUsers.clear();
+            connectedUsers.clear(); // Remove all entries from the map
             
         } catch (IOException e) {
             System.err.println("Error closing server: " + e.getMessage());
@@ -139,8 +141,8 @@ public class ChatManager {
      */
     public static void forceReleasePort() {
         try {
-            Socket socket = new Socket("localhost", currentPort);
-            socket.close();
+            Socket socket = new Socket("localhost", currentPort); // Try to connect to the port
+            socket.close(); // Close connection immediately
             System.out.println("Successfully connected to port " + currentPort + ", it appears to be in use.");
         } catch (ConnectException e) {
             // Port is not in use, which is good
@@ -154,21 +156,21 @@ public class ChatManager {
      * Inner class that handles individual client connections.
      * Each connected client gets its own ClientHandler instance.
      */
-    private static class ClientHandler implements Runnable {
+    private static class ClientHandler implements Runnable { // Implements Runnable for thread pool execution
         /** The socket connection to this client */
-        private Socket clientSocket;
+        private Socket clientSocket; // Socket for communication with this client
         
         /** Stream for receiving objects from the client */
-        private ObjectInputStream in;
+        private ObjectInputStream in; // Deserializes objects from client
         
         /** Stream for sending objects to the client */
-        private ObjectOutputStream out;
+        private ObjectOutputStream out; // Serializes objects to client
         
         /** ID of the user this handler is serving */
-        private String userId;
+        private String userId; // Identifies which user this handler represents
         
         /** Flag indicating if this handler is running */
-        private boolean running = true;
+        private boolean running = true; // Controls handler operation state
         
         /**
          * Creates a new client handler for the specified socket.
@@ -176,7 +178,7 @@ public class ChatManager {
          * @param socket Client's socket connection
          */
         public ClientHandler(Socket socket) {
-            this.clientSocket = socket;
+            this.clientSocket = socket; // Store socket for this client
         }
         
         /**
@@ -184,10 +186,10 @@ public class ChatManager {
          * Called when the server is shutting down or the client disconnects.
          */
         public void closeConnection() {
-            running = false;
+            running = false; // Signal handler to stop
             try {
                 if (clientSocket != null && !clientSocket.isClosed()) {
-                    clientSocket.close();
+                    clientSocket.close(); // Close the socket
                 }
             } catch (IOException e) {
                 System.err.println("Error closing client connection: " + e.getMessage());
@@ -202,29 +204,29 @@ public class ChatManager {
         public void run() {
             try {
                 // Create streams - ORDER IS IMPORTANT to avoid deadlock
-                out = new ObjectOutputStream(clientSocket.getOutputStream());
+                out = new ObjectOutputStream(clientSocket.getOutputStream()); // Must create output stream first
                 out.flush(); // Important to avoid deadlock
-                in = new ObjectInputStream(clientSocket.getInputStream());
+                in = new ObjectInputStream(clientSocket.getInputStream()); // Then create input stream
                 
                 // First message should be the user ID
-                Object userIdObj = in.readObject();
-                if (userIdObj instanceof String) {
-                    userId = (String) userIdObj;
-                    connectedUsers.put(userId, this);
+                Object userIdObj = in.readObject(); // Read user identification
+                if (userIdObj instanceof String) { // Verify correct type
+                    userId = (String) userIdObj; // Cast and store user ID
+                    connectedUsers.put(userId, this); // Register this handler in the connected users map
                     
                     System.out.println("User " + userId + " connected to chat server");
                     
                     // Process incoming messages
-                    while (running && isRunning && !clientSocket.isClosed()) {
+                    while (running && isRunning && !clientSocket.isClosed()) { // Loop until server stops, handler stops, or socket closes
                         try {
-                            Object obj = in.readObject();
-                            if (obj instanceof ChatMessage) {
-                                ChatMessage message = (ChatMessage) obj;
-                                processMessage(message);
+                            Object obj = in.readObject(); // Read next object from client
+                            if (obj instanceof ChatMessage) { // Check if it's a chat message
+                                ChatMessage message = (ChatMessage) obj; // Cast to proper type
+                                processMessage(message); // Process the message
                             }
                         } catch (EOFException | SocketException e) {
                             // Client disconnected
-                            break;
+                            break; // Exit the message processing loop
                         } catch (ClassNotFoundException e) {
                             System.err.println("Unknown message type received: " + e.getMessage());
                         }
@@ -236,15 +238,15 @@ public class ChatManager {
                 System.err.println("Error reading object from client: " + e.getMessage());
             } finally {
                 if (userId != null) {
-                    connectedUsers.remove(userId);
+                    connectedUsers.remove(userId); // Remove from active users map
                     System.out.println("User " + userId + " disconnected from chat server");
                 }
                 
                 // Close resources
                 try {
-                    if (in != null) in.close();
-                    if (out != null) out.close();
-                    if (clientSocket != null && !clientSocket.isClosed()) clientSocket.close();
+                    if (in != null) in.close(); // Close input stream
+                    if (out != null) out.close(); // Close output stream
+                    if (clientSocket != null && !clientSocket.isClosed()) clientSocket.close(); // Close socket
                 } catch (IOException e) {
                     System.err.println("Error closing client resources: " + e.getMessage());
                 }
@@ -260,20 +262,20 @@ public class ChatManager {
         private void processMessage(ChatMessage message) {
             try {
                 // CRITICAL: Save the message to persistent storage FIRST
-                DataManager.addChatMessage(message);
+                DataManager.addChatMessage(message); // Ensure message is stored permanently
                 System.out.println("Message saved: from " + message.getSenderId() + " to " + message.getReceiverId());
                 
                 // Send to recipient if online
-                String recipientId = message.getReceiverId();
-                ClientHandler recipient = connectedUsers.get(recipientId);
+                String recipientId = message.getReceiverId(); // Get recipient's ID
+                ClientHandler recipient = connectedUsers.get(recipientId); // Look up recipient's handler
                 
                 if (recipient != null) {
-                    recipient.sendMessage(message);
+                    recipient.sendMessage(message); // Forward message to recipient if online
                 }
                 
                 // Confirm receipt to sender
-                out.writeObject("DELIVERED");
-                out.flush();
+                out.writeObject("DELIVERED"); // Send confirmation to original sender
+                out.flush(); // Ensure data is sent immediately
                 out.reset(); // Reset object cache to avoid memory leaks
             } catch (IOException e) {
                 System.err.println("Error sending delivery confirmation: " + e.getMessage());
@@ -287,8 +289,8 @@ public class ChatManager {
          */
         public void sendMessage(ChatMessage message) {
             try {
-                out.writeObject(message);
-                out.flush();
+                out.writeObject(message); // Serialize and send message
+                out.flush(); // Ensure message is sent immediately
                 out.reset(); // Reset object cache to avoid memory leaks
             } catch (IOException e) {
                 System.err.println("Error sending message to recipient: " + e.getMessage());
@@ -305,12 +307,12 @@ public class ChatManager {
      * @return User's name, or "Unknown User" if not found
      */
     public static String getUserNameById(String userId) {
-        for (User user : Administrator.getAllUsers()) {
-            if (user.getId().equals(userId)) {
-                return user.getName();
+        for (User user : Administrator.getAllUsers()) { // Search through all system users
+            if (user.getId().equals(userId)) { // Compare IDs
+                return user.getName(); // Return name if found
             }
         }
-        return "Unknown User";
+        return "Unknown User"; // Default if user not found
     }
     
     /**
@@ -322,26 +324,26 @@ public class ChatManager {
      * @return List of users that can be contacted
      */
     public static List<User> getChatContactsForUser(User user) {
-        List<User> contacts = new ArrayList<>();
+        List<User> contacts = new ArrayList<>(); // List to hold allowed chat contacts
         
-        if (user instanceof Patient patient) {
+        if (user instanceof Patient patient) { // Check if user is a patient (using Java 16+ pattern matching)
             // 1. Add their physician
-            Doctor physician = patient.getPhysician();
+            Doctor physician = patient.getPhysician(); // Get patient's primary doctor
             if (physician != null) {
-                contacts.add(physician);
+                contacts.add(physician); // Add primary doctor to contacts
             }
             
             // 2. Add all doctors who have this patient in their list
-            for (Doctor doctor : Administrator.getDoctors()) {
-                if (doctor.getPatients().contains(patient) && !contacts.contains(doctor)) {
-                    contacts.add(doctor);
+            for (Doctor doctor : Administrator.getDoctors()) { // Iterate through all doctors
+                if (doctor.getPatients().contains(patient) && !contacts.contains(doctor)) { // Check if doctor has this patient and isn't already added
+                    contacts.add(doctor); // Add doctor to contacts
                 }
             }
-        } else if (user instanceof Doctor doctor) {
+        } else if (user instanceof Doctor doctor) { // Check if user is a doctor
             // Doctors can chat with all their patients
-            contacts.addAll(doctor.getPatients());
+            contacts.addAll(doctor.getPatients()); // Add all patients assigned to this doctor
         }
         
-        return contacts;
+        return contacts; // Return list of allowed contacts
     }
 }
