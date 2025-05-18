@@ -51,15 +51,18 @@ RPMS is a comprehensive healthcare management system designed to facilitate remo
      - Install Maven if not already installed
      - Use chatgpt or follow any youtube video to install because you have to add the path to environment variables.
      - Brief steps are listed as follows
-     1. **Download Maven**:
+    1. **Download Maven**:
    - Download latest binary zip from [Apache Maven website](https://maven.apache.org/download.cgi)
 
     2. **Extract Files**:
-   - Extract to a directory without spaces (e.g., `C:\Programs\Maven`)
+   - Extract to a directory (e.g., `C:\Programs\Maven`)
+   - copy the path of the bin folder inside this apache maven directory
 
     3. **Set Environment Variables**:
-   - Create system variable `MAVEN_HOME` pointing to installation directory
-   - Add `%MAVEN_HOME%\bin` to `Path` variable
+   - Search For Environment variables. 
+   - Go to "Edit the System Enviroment Variables"
+   - Then Go to "Environment Variables"
+   - Under System Variables, go to the path and add the copied path.
 
     4. **Verify Installation**:
    - Open new command prompt
