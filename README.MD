@@ -34,7 +34,7 @@ RPMS is a comprehensive healthcare management system designed to facilitate remo
 1. Get the project:
    - **Option 1**: Clone the repository:
      ```bash
-     git clone https://github.com/your-username/rpms.git
+     git clone https://github.com/alapg09/RemotePatientMonitoringSystem.git
      ```
    - **Option 2**: Extract from the provided ZIP file
 
