@@ -8,7 +8,6 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
 
 # IDE-specific files
 # IntelliJ IDEA
@@ -37,7 +36,6 @@ tmp/
 # Java specific
 *.class
 *.log
-*.jar
 *.war
 *.nar
 *.ear
@@ -67,10 +65,6 @@ Icon
 # Logs
 logs/
 
-# Maven Wrapper (if you decide to add it later)
-!.mvn/wrapper/maven-wrapper.jar
-!mvnw
-!mvnw.cmd
 
 # Ignore video files
 # Video files

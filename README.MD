@@ -47,6 +47,21 @@ RPMS is a comprehensive healthcare management system designed to facilitate remo
 3. Configure the project:
    - **Option 1**: Using Maven (recommended)
      - Install Maven if not already installed
+     - Use chatgpt or follow any youtube video to install because you have to add the path to environment variables.
+     - Brief steps are listed as follows
+     1. **Download Maven**:
+   - Download latest binary zip from [Apache Maven website](https://maven.apache.org/download.cgi)
+
+    2. **Extract Files**:
+   - Extract to a directory without spaces (e.g., `C:\Programs\Maven`)
+
+    3. **Set Environment Variables**:
+   - Create system variable `MAVEN_HOME` pointing to installation directory
+   - Add `%MAVEN_HOME%\bin` to `Path` variable
+
+    4. **Verify Installation**:
+   - Open new command prompt
+   - Run `mvn -version` to confirm successful installation
      - In the terminal or IDE's Maven panel, run:
        ```bash
        mvn clean install
@@ -65,6 +80,12 @@ RPMS is a comprehensive healthcare management system designed to facilitate remo
    - **With Maven**: Run `mvn javafx:run`
    - **Without Maven**: Run the Main class (com.rpms.Main)
      - Add VM arguments if needed: `--module-path "path\to\javafx\lib" --add-modules javafx.controls,javafx.fxml`
+
+
+
+## Demo Video (Google Drive Link)
+https://drive.google.com/drive/folders/1M8ipYnAI6k8LeqD9CgckuM_L1npaJnpu?usp=drive_link
+
 
 ## Usage
 
