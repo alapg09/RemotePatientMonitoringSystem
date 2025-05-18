@@ -1,3 +1,5 @@
+![Screenshot Description](screenshots/image.png)
+
 # Remote Patient Monitoring System (RPMS)
 
 ## Overview
